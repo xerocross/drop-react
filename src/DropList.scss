@@ -1,0 +1,48 @@
+@import "sass-variables";
+.drop-list {
+    border-style: solid;
+    border-width: 1px;
+    .list {
+        max-height: 300px;
+        overflow-y: scroll;
+    }
+    .syncing-bar {
+        height: 10px;
+        animation: waiting-animation 2s infinite;
+    }
+
+    @keyframes waiting-animation {
+        0% {
+            background: $highlight-color;
+        }
+        50% {
+            background: $contrast-color;
+        }
+        100% {
+            background:$highlight-color;
+        }
+    }
+
+    .drop-row {
+        display: flex;
+        min-height: 50px;
+        align-items: center;
+        padding: 0px 5px;
+        .drop-item {
+            flex: 1;
+        }
+        .drop-delete {
+            .del-button {
+                background:linear-gradient(to bottom, $warning-color-upper 5%, $warning-color-lower 100%);
+                padding:5px 5px;
+                &:hover {
+                    background:linear-gradient(to bottom, $warning-color-lower 5%, $warning-color-upper 100%);
+                }
+            }
+        }
+    }
+
+    .drop-row:nth-of-type(even) {
+        background-color: $highlight-color-lighter;
+    }
+}

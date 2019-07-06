@@ -1,0 +1,19 @@
+@import "sass-variables";
+.drop-search {
+    text-align: left;
+    width: 100%;
+    .search-bar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        label {
+            width: auto;
+        }
+        input {
+            flex: 1;
+        }
+    }
+
+}
