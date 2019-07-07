@@ -1,4 +1,4 @@
-import HashtagHelpers from "./hashtag-helpers.js";
+import HashtagHelpers from "./HashtagHelper.js";
 import StringHash from "./string-hash.js";
 
 export default class Drop {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import "./DropAddText.scss";
+import "./MainTextInput.scss";
 
-export default class DropAddText extends Component {
+export default class MainTextInput extends Component {
 
     constructor() {
         super();
@@ -19,7 +19,7 @@ export default class DropAddText extends Component {
 
     render () {
         return (
-            <div className = "drop-add-text">
+            <div className = "main-text-input">
                 <h2><label>Create/Search Drops</label></h2>
                 <p className = "info">
                     Use <span className = "highlight">#hashtags</span> to tag all the keywords.  Search is based on hashtags.

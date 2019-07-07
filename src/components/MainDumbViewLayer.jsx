@@ -1,13 +1,11 @@
 import React from "react";
 import BaseComponent from "./BaseComponent.jsx";
-import DropAddText from "./DropAddText";
+import MainTextInput from "./MainTextInput";
 import DropSearch from "./DropSearch";
-import HashtagHelpers from "./hashtag-helpers";
-import StringHash from "./string-hash";
+import HashtagHelpers from "../helpers/HashtagHelper";
 import DropList from "./DropList";
-import COPY from "./messages-copy";
 
-export default class DropMain extends BaseComponent {
+export default class MainDumbViewLayer extends BaseComponent {
     constructor (props) {
         super(props);
         this.dropDrop = this.dropDrop.bind(this);
@@ -49,7 +47,7 @@ export default class DropMain extends BaseComponent {
         return (
             <div className="drop-main">
                 <div>
-                    <DropAddText 
+                    <MainTextInput 
                         dropDrop = {this.dropDrop}
                         updateDroptext = {this.updateDroptext}
                         hashTags = {this.hashTags}

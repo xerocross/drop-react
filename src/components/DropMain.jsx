@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import BaseComponent from "./BaseComponent.jsx";
 import './App.scss';
-import COPY from "./messages-copy.js";
-import HashtagHelpers from "./hashtag-helpers";
+import HashtagHelpers from "../helpers/HashtagHelper.js";
 import LocalStorageService from "./local-storage-service.js";
-import DumbFrontend from "./DumbFrontend.jsx";
-import StringHash from "./string-hash";
-import Drop from "./Drop.js";
+import MainDumbViewLayer from "./MainDumbViewLayer.jsx";
+import StringHash from "../helpers/string-hash";
+import DropNote from "../helpers/DropNote.js";
 
 export default class DropMain extends BaseComponent {
     constructor (props) {
@@ -63,17 +62,17 @@ export default class DropMain extends BaseComponent {
         this.setState({
             isSyncing: false
         });
-        this.props.pushNewStatusMessage(COPY.IS_SYNCED_MESSAGE);
+        this.props.pushNewStatusMessage(this.COPY.IS_SYNCED_MESSAGE);
     }
     setIsSyncing () {
         this.setState({
             isSyncing: true
         });
-        this.props.pushNewStatusMessage(COPY.IS_SYNCING_MESSAGE);
+        this.props.pushNewStatusMessage(this.COPY.IS_SYNCING_MESSAGE);
     }
     
     persistDropToDatabase (drop) {
-        this.props.pushNewStatusMessage(COPY.SENDING_DROP);
+        this.props.pushNewStatusMessage(this.COPY.SENDING_DROP);
         let observable = this.props.DropBackendService.saveNewDrop(drop);
         observable.subscribe((response) => {
             switch (response.status) {
@@ -82,7 +81,7 @@ export default class DropMain extends BaseComponent {
                 this.removeDropFromUnsaved(drop)
                 break;
             case "FAILED_ATTEMPT":
-                this.props.pushNewStatusMessage(COPY.SERVER_RESPONSE_ERROR);
+                this.props.pushNewStatusMessage(this.COPY.SERVER_RESPONSE_ERROR);
                 break;
             case "FAIL":
                 this.postDropFailed(drop);
@@ -110,7 +109,7 @@ export default class DropMain extends BaseComponent {
                 break;
             case "FAILED_ATTEMPT":
                 debugger;
-                this.props.pushNewStatusMessage(COPY.SERVER_RESPONSE_ERROR);
+                this.props.pushNewStatusMessage(this.COPY.SERVER_RESPONSE_ERROR);
                 break;
             case "FAIL":
                 this.props.setFatalError();
@@ -135,7 +134,7 @@ export default class DropMain extends BaseComponent {
 
     postDropFailed (drop) {
         this.deleteLocalDrop(drop._id);
-        this.props.pushNewStatusMessage(COPY.POST_DROP_FAILED);
+        this.props.pushNewStatusMessage(this.COPY.POST_DROP_FAILED);
         let unsavedDrops = this.state.unsavedDrops.slice();
         unsavedDrops.push(drop);
         this.setState({
@@ -145,14 +144,14 @@ export default class DropMain extends BaseComponent {
 
     deleteDropFailed (drop) {
         this.pushNewLocalDrop(drop);
-        this.props.pushNewStatusMessage(COPY.DELETE_DROP_FAILED)
+        this.props.pushNewStatusMessage(this.COPY.DELETE_DROP_FAILED)
     }
 
 
     deleteDrop (drop) {
-        if (window.confirm(COPY.CONFIRM_DELETE_DROP)) {
+        if (window.confirm(this.COPY.CONFIRM_DELETE_DROP)) {
             this.deleteLocalDrop(drop)
-            this.props.pushNewStatusMessage(COPY.DELETE_DROP_STATUS);
+            this.props.pushNewStatusMessage(this.COPY.DELETE_DROP_STATUS);
             let observable = this.props.DropBackendService.deleteDrop(drop._id);
             observable.subscribe((response) => {
                 switch (response.status) {
@@ -160,7 +159,7 @@ export default class DropMain extends BaseComponent {
                     this.refreshDropsFromServer(this.props.username);
                     break;
                 case "FAILED_ATTEMPT":
-                    this.props.pushNewStatusMessage(COPY.SERVER_RESPONSE_ERROR);
+                    this.props.pushNewStatusMessage(this.COPY.SERVER_RESPONSE_ERROR);
                     break;
                 case "FAIL":
                     this.deleteDropFailed(drop);
@@ -222,7 +221,7 @@ export default class DropMain extends BaseComponent {
             alert("Please select a username-password.");
             return false;
         } else {
-            let drop = new Drop(text, this.props.username);
+            let drop = new DropNote(text, this.props.username);
             this.pushNewLocalDrop(drop);
             this.persistDropToDatabase(drop);
             return true;
@@ -232,7 +231,7 @@ export default class DropMain extends BaseComponent {
     render () {
         return (
             <div className="drop-main">
-                <DumbFrontend 
+                <MainDumbViewLayer 
                     unsavedDrops = {this.state.unsavedDrops}
                     getSelectedDrops = {this.getSelectedDrops}
                     drops = {this.state.drops}

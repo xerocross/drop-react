@@ -23,39 +23,39 @@ export default {
                     });
                     iteration++;
                     axios(configObject)
-                    .then((response) => {
-                        if (response.status === successStatus) {
-                            observer.next({
-                                status: "SUCCESS",
-                                data : response.data,
-                                url : url
-                            })
-                        } else {
+                        .then((response) => {
+                            if (response.status === successStatus) {
+                                observer.next({
+                                    status: "SUCCESS",
+                                    data : response.data,
+                                    url : url
+                                })
+                            } else {
+                                observer.next({
+                                    status: "FAILED_ATTEMPT",
+                                    attemptNum: iteration,
+                                    statusCode : response.status,
+                                    url : url
+                                })
+                                setTimeout(()=>{
+                                    attempt();
+                                    delay+= delay;
+                                }, delay);
+                            
+                            }
+                        })
+                        .catch((errorThrown) =>{
                             observer.next({
                                 status: "FAILED_ATTEMPT",
                                 attemptNum: iteration,
-                                statusCode : response.status,
+                                error : errorThrown,
                                 url : url
                             })
                             setTimeout(()=>{
                                 attempt();
-                                delay+= delay;
+                                delay+= 1000;
                             }, delay);
-                            
-                        }
-                    })
-                    .catch((errorThrown) =>{
-                        observer.next({
-                            status: "FAILED_ATTEMPT",
-                            attemptNum: iteration,
-                            error : errorThrown,
-                            url : url
                         })
-                        setTimeout(()=>{
-                            attempt();
-                            delay+= 1000;
-                        }, delay);
-                    })
                 }
             }
             attempt();

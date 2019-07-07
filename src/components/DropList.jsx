@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import DropDisplay from "./DropDisplay";
-import StringHash from "./string-hash.js";
+import StringHash from "../helpers/string-hash.js";
 import "./DropList.scss";
 
 export default class DropList extends Component {

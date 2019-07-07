@@ -1,27 +1,15 @@
 import React, { Component } from "react";
+import BaseComponent from "./BaseComponent";
 import "./LoginBar.scss";
 
-export default class LoginBar extends Component {
+export default class LoginBar extends BaseComponent {
     constructor () {
         super();
-        this.state = {
-        }
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
-        this.postNewUsername = this.postNewUsername.bind(this);
-    }
-    componentDidMount() {
-        this.setState({
-            usernameInput : this.props.username
-        });
     }
 
     handleUsernameChange (e) {
         this.props.updateUsername(e.target.value);
-    }
-
-
-    postNewUsername () {
-        this.props.updateUsername(this.state.usernameInput);
     }
 
     render () {

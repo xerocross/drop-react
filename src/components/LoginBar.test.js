@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import {cleanup,fireEvent,render} from '@testing-library/react';
 import LoginBar from "./LoginBar.jsx";
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import {cleanup,fireEvent,render} from '@testing-library/react';
-import DropAddText from "./DropAddText.jsx";
+import MainTextInput from "./MainTextInput.jsx";
 import $ from "jquery";
 
 
@@ -21,7 +21,7 @@ afterEach(() => {
 
 test('renders without crashing', () => {
     const div = document.createElement('div');
-    render(<DropAddText 
+    render(<MainTextInput 
         hashTags = {[]}
     />, div);
 });
@@ -32,7 +32,7 @@ test('changing textarea calls updateDropText ', (done) => {
         expect(text).toBe(testVal);
         done();
     }
-    ({ getByTestId } = render(<DropAddText
+    ({ getByTestId } = render(<MainTextInput
         hashTags = {[]}
         dropDrop = { noop }
         updateDroptext = {updateDroptext}
@@ -47,7 +47,7 @@ test('drop button calls dropDrop prop', (done) => {
     let dropDrop = () => {
         done();
     }
-    ({ getByTestId } = render(<DropAddText
+    ({ getByTestId } = render(<MainTextInput
         hashTags = {[]}
         dropDrop = { dropDrop }
         updateDroptext = {noop}
@@ -61,7 +61,7 @@ test('drop button calls dropDrop prop', (done) => {
 
 test('list of hashtags displayed', () => {
     let hashTags = ["#apple", "#pear"];
-    ({ getByTestId } = render(<DropAddText
+    ({ getByTestId } = render(<MainTextInput
         hashTags = {hashTags}
         dropDrop = { noop }
         updateDroptext = {noop}
@@ -73,7 +73,7 @@ test('list of hashtags displayed', () => {
 
 test('list of hashtags displayed has right number (3)', () => {
     let hashTags = ["#apple", "#pear", "#rich"];
-    ({ getByTestId } = render(<DropAddText
+    ({ getByTestId } = render(<MainTextInput
         hashTags = {hashTags}
         dropDrop = { noop }
         updateDroptext = {noop}

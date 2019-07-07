@@ -1,7 +1,7 @@
 import React from 'react';
 import {cleanup,fireEvent,render, act} from '@testing-library/react';
 import DropMain from "./DropMain.jsx";
-import Observable from "./Observable";
+import Observable from "../helpers/Observable";
 import $ from "jquery";
 
 let div;
