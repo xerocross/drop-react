@@ -1,12 +1,18 @@
 import React, { Component } from "react";
 import DropDisplay from "./DropDisplay";
-import StringHash from "../helpers/string-hash.js";
 import "./DropList.scss";
 
 export default class DropList extends Component {
     render() {
+        if (!this.props.drops) {
+            console.log("props.drops was not defined");
+            console.log(this.props);
+            throw new Error("drops not defined");
+        }
         return (
-            <div className = "drop-list">
+            <div className = "drop-list"
+                data-testid="drop-list"
+            >
                 {this.props.isSyncing && 
                     <div className = "syncing-bar"></div>
                 }
@@ -14,8 +20,10 @@ export default class DropList extends Component {
                     {
                         this.props.drops.map((drop)=> {
                             return (
-                                <div className = "drop-row"  key = {drop.key}>
-                                    <div className="drop-item">
+                                <div className = "drop-row"  key = {drop.key} data-dropkey={drop.key}>
+                                    <div className="drop-item"
+                                        
+                                    >
                                         <DropDisplay 
                                             drop = {drop}
                                         />

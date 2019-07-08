@@ -55,21 +55,6 @@
     font-weight: bold;
     font-family: serif;
   }
-  .unsaved-drops {
-    margin-top: 1em;
-    .drop-delete {
-      display: none;
-    }
-    .unsaved-drops-bar {
-      display: flex;
-      margin-bottom: 5px;
-      h2 {
-        flex: 1;
-      }
-      .button {
-        padding: 0px 10px;
-      }
-    }
-  }
+
 }
 

@@ -19,7 +19,9 @@ export default class MainTextInput extends Component {
 
     render () {
         return (
-            <div className = "main-text-input">
+            <div className = "main-text-input"
+                data-testid="main-text-input"
+            >
                 <h2><label>Create/Search Drops</label></h2>
                 <p className = "info">
                     Use <span className = "highlight">#hashtags</span> to tag all the keywords.  Search is based on hashtags.
@@ -47,7 +49,7 @@ export default class MainTextInput extends Component {
                     className="hashtag-list"
                 >
                     {
-                        this.props.hashTags.map(tag=> {
+                        this.props.hashtags.map(tag=> {
                             return (
                                 <span key = {tag} data-testid="hashtag" className="hashtag">{tag}</span>
                             );

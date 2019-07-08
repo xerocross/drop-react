@@ -22,7 +22,7 @@ afterEach(() => {
 test('renders without crashing', () => {
     const div = document.createElement('div');
     render(<MainTextInput 
-        hashTags = {[]}
+        hashtags = {[]}
     />, div);
 });
 
@@ -33,7 +33,7 @@ test('changing textarea calls updateDropText ', (done) => {
         done();
     }
     ({ getByTestId } = render(<MainTextInput
-        hashTags = {[]}
+        hashtags = {[]}
         dropDrop = { noop }
         updateDroptext = {updateDroptext}
     />));
@@ -48,7 +48,7 @@ test('drop button calls dropDrop prop', (done) => {
         done();
     }
     ({ getByTestId } = render(<MainTextInput
-        hashTags = {[]}
+        hashtags = {[]}
         dropDrop = { dropDrop }
         updateDroptext = {noop}
     />));
@@ -60,9 +60,9 @@ test('drop button calls dropDrop prop', (done) => {
 
 
 test('list of hashtags displayed', () => {
-    let hashTags = ["#apple", "#pear"];
+    let hashtags = ["#apple", "#pear"];
     ({ getByTestId } = render(<MainTextInput
-        hashTags = {hashTags}
+        hashtags = {hashtags}
         dropDrop = { noop }
         updateDroptext = {noop}
     />));
@@ -72,9 +72,9 @@ test('list of hashtags displayed', () => {
 });
 
 test('list of hashtags displayed has right number (3)', () => {
-    let hashTags = ["#apple", "#pear", "#rich"];
+    let hashtags = ["#apple", "#pear", "#rich"];
     ({ getByTestId } = render(<MainTextInput
-        hashTags = {hashTags}
+        hashtags = {hashtags}
         dropDrop = { noop }
         updateDroptext = {noop}
     />));

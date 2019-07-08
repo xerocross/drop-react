@@ -2,83 +2,55 @@ import React from "react";
 import BaseComponent from "./BaseComponent.jsx";
 import MainTextInput from "./MainTextInput";
 import DropSearch from "./DropSearch";
-import HashtagHelpers from "../helpers/HashtagHelper";
-import DropList from "./DropList";
+import UnsavedDrops from "./UnsavedDrops.jsx";
 
 export default class MainDumbViewLayer extends BaseComponent {
     constructor (props) {
         super(props);
-        this.dropDrop = this.dropDrop.bind(this);
-        this.createDrop = this.createDrop.bind(this);
-        this.deleteDrop = this.deleteDrop.bind(this);
         this.updateDroptext = this.updateDroptext.bind(this);
-        this.state = {
-            droptext : "",
-        }
-    }
-
-    get hashTags () {
-        return HashtagHelpers.parse(this.state.droptext);
+        this.bindOwn(["updateDroptext", "createDrop", "deleteDrop", "dropDrop"]);
     }
 
     updateDroptext (droptext) {
-        this.setState({
-            droptext : droptext
-        })
+        this.props.updateDroptext(droptext);
     }
 
     createDrop (drop) {
-        this.log("create_drop", drop);
         this.props.createDrop(drop);
     }
 
     deleteDrop (drop) {
-        this.log("delete", drop);
-        debugger;
         this.props.deleteDrop(drop);
     }
 
     dropDrop () {
-        this.createDrop(this.state.droptext);
+        this.createDrop(this.props.droptext);
     }
-
 
     render () {
         return (
-            <div className="drop-main">
+            <div className="drop-main" data-testid="MainDumbViewLayer">
                 <div>
                     <MainTextInput 
                         dropDrop = {this.dropDrop}
                         updateDroptext = {this.updateDroptext}
-                        hashTags = {this.hashTags}
+                        hashtags = {this.props.hashtags}
+                        droptext = {this.props.droptext}
                     />
                     <DropSearch 
                         drops = {this.props.drops}
-                        searchText = {this.state.droptext}
-                        getSelectedDrops = {this.props.getSelectedDrops}
+                        searchText = {this.props.droptext}
+                        selectedDrops = {this.props.selectedDrops}
                         deleteDrop = {this.deleteDrop}
-                        hashTags = {this.hashTags}
+                        hashtags = {this.props.hashtags}
                         isSyncing = {this.props.isSyncing}
                     />
                 </div>
                 { this.props.unsavedDrops.length > 0 &&
-                
-                <div className = "unsaved-drops">
-                    <div className = "unsaved-drops-bar">
-                        <h2>Unsaved Drops</h2>
-                        
-                        <button 
-                            onClick = {this.trySaveUnsavedDrops}
-                            className = "button"    
-                        >
-                            try again
-                        </button>
-                    </div>
-                    <DropList 
-                        drops = {this.props.unsavedDrops}
-                        deleteDrop = {this.props.deleteDrop}
+                    <UnsavedDrops 
+                        unsavedDrops = {this.props.unsavedDrops}
+                        trySaveUnsavedDrops = {this.props.trySaveUnsavedDrops}
                     />
-                </div>
                 }
             </div>
         );

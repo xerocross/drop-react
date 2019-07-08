@@ -2,14 +2,13 @@ import React, { Component } from "react";
 import DropList from "./DropList";
 
 export default class DropSearch extends Component {
-    get selectedDrops () {
-        return this.props.getSelectedDrops(this.props.drops, this.props.hashTags);
-    }
     render () {
         return (
-            <div className = "drop-search">
+            <div className = "drop-search"
+                data-testid = "drop-search"
+            >
                 <DropList 
-                    drops = {this.selectedDrops}
+                    drops = {this.props.selectedDrops}
                     deleteDrop = {this.props.deleteDrop}
                     isSyncing = {this.props.isSyncing}
                 />

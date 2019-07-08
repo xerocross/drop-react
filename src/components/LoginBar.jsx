@@ -14,7 +14,7 @@ export default class LoginBar extends BaseComponent {
 
     render () {
         return (
-            <div className = "login-bar">
+            <div className = "login-bar" data-testid="LoginBar">
                 {!this.props.isUsernameSet && 
                     <div>
                         <p className = "info">Your username and password are <span className = "highlight">one and the same</span>. Anybody who guesses your username can access your account.  If you choose a username that is already occupied, there will be no error message.  You will just be accessing the same account as someone else.</p>

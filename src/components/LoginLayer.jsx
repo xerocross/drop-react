@@ -1,8 +1,7 @@
 import React from "react";
 import BaseComponent from "./BaseComponent.jsx";
 import LoginBar from "./LoginBar";
-import DropMain from "./DropMain.jsx";
-import LoginHelper from "../helpers/LoginHelper.js";
+import BackendCommunicationLayer from "./BackendCommunicationLayer";
 
 export default class LoginLayer extends BaseComponent {
     constructor (props) {
@@ -11,66 +10,63 @@ export default class LoginLayer extends BaseComponent {
         this.tryToGetUsernameFromStorage = this.tryToGetUsernameFromStorage.bind(this);
         this.changeUser = this.changeUser.bind(this);
         this.postNewUsername = this.postNewUsername.bind(this);
-       
-        this.state = {
-            username : "",
-            isUsernameSet : false,
-            
-        }
     }
+
     componentDidMount () {
         this.tryToGetUsernameFromStorage();
     }
 
     updateUsername (newValue) {
-        this.setState({
-            username: newValue,
-        });
+        this.props.updateUsername(newValue);
     }
 
     tryToGetUsernameFromStorage () {
-        let username = LoginHelper.tryToGetUsernameFromStorage();
+        let username = this.props.LoginHelper.tryToGetUsernameFromStorage();
         if (username) {
             this.updateUsername(username);
-            this.setState({
-                isUsernameSet: true
-            });
+            this.props.updateIsUsernameSet(true);
         }
     }
 
     changeUser () {
-        this.setState({
-            isUsernameSet: false
-        });
+        this.props.updateIsUsernameSet(false);
     }
 
     postNewUsername () {
-        LoginHelper.setLocalUsername(this.state.username);
-        this.setState({
-            isUsernameSet: true
-        });
+        this.props.LoginHelper.setLocalUsername(this.props.username);
+        this.props.updateIsUsernameSet(true);
     }
 
     render () {
+        this.runRenderValidation();
         return (
-            <div className="App container">
+            <div data-testid = "LoginLayer">
                 <LoginBar 
-                    username = {this.state.username}
+                    username = {this.props.username}
                     updateUsername = {this.updateUsername}
-                    isUsernameSet = {this.state.isUsernameSet}
+                    isUsernameSet = {this.props.isUsernameSet}
                     changeUser = {this.changeUser}
                     postNewUsername = {this.postNewUsername}
                 />
 
-                {this.state.isUsernameSet &&
-                <DropMain
-                    username = {this.state.username}
-                    pushNewStatusMessage = {this.props.pushNewStatusMessage}
-                    changeUser = {this.changeUser}
-                    drops = {this.state.drops}
-                    DropBackendService = {this.props.DropBackendService}
-                    setFatalError = {this.setFatalError}
-                />
+                {this.props.isUsernameSet &&
+                    <BackendCommunicationLayer 
+                        username = {this.props.username}
+                        pushNewStatusMessage = {this.props.pushNewStatusMessage}
+                        changeUser = {this.changeUser}
+                        drops = {this.props.drops}
+                        DropBackendService = {this.props.DropBackendService}
+                        setFatalError = {this.props.setFatalError}
+                        updateDrops = {this.props.updateDrops}
+                        droptext = {this.props.droptext}
+                        isSyncing = {this.props.isSyncing}
+                        unsavedDrops = {this.props.unsavedDrops}
+                        updateDroptext = {this.props.updateDroptext}
+                        createDrop = {this.props.createDrop}
+                        updateUnsavedDrops = {this.props.updateUnsavedDrops}
+                        appAlert = {this.props.appAlert}
+                        appConfirm = {this.props.appConfirm}
+                    />
                 }
 
             </div>
