@@ -12,11 +12,7 @@ jest.mock('../helpers/LoginHelper.js');
 let div;
 let getByTestId, queryByTestId;
 
-let setProps = () => {
-}
-
-beforeEach(()=>{
-    setProps();
+beforeEach(() => {
     div = document.createElement('div');
 })
 
@@ -29,29 +25,53 @@ test('renders without crashing, no local username', () => {
     ({ getByTestId } =   render(<App />, div));
 });
 
+let exampleData = () => {
+    return [
+        {
+            text: "candy #apple",
+            hashtags : ["#apple"],
+            key : "0"
+        }
+    ];
+}
+
 test('renders without crashing if username in local storage', () => {
     LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce("adam");
     DropBackendService.getUserDrops.mockReturnValueOnce(
-        new Observable((observer)=> {
+        new Observable((observer) => {
             observer.next({
                 status: "SUCCESS",
-                data: [
-                    {
-                        text: "candy #apple",
-                        hashtags : ["#apple"],
-                        key : "0"
-                    }
-                ]});
+                data: exampleData()
+            });
         }));
     ({ getByTestId } =   render(<App />, div));
 });
 
-describe("renders MainDumbViewLayer with data if username is set",()=>{
+
+it('displays status messages visibly', () => {
+    LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce("adam");
+    DropBackendService.getUserDrops.mockReturnValueOnce(
+        new Observable((observer) => {
+            observer.next({
+                status: "SUCCESS",
+                data: exampleData()
+            });
+        })
+    );
+    ({ getByTestId } =   render(<App />, div));
+    let StatusBar = getByTestId("StatusBar");
+    let statusRows = $(".statusItem", StatusBar);
+    let len = statusRows.length;
+    expect(len).toBeGreaterThan(0);
+});
+
+
+describe("renders MainDumbViewLayer with data if username is set",() => {
 
     test('renders MainDumbViewLayer if username in local storage', () => {
         LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce("adam");
         DropBackendService.getUserDrops.mockReturnValueOnce(
-            new Observable((observer)=> {
+            new Observable((observer) => {
                 observer.next({
                     status: "SUCCESS",
                     data: []
@@ -65,16 +85,10 @@ describe("renders MainDumbViewLayer with data if username is set",()=>{
     test('renders MainDumbViewLayer with data if username in local storage ', () => {
         LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce("adam");
         DropBackendService.getUserDrops.mockReturnValueOnce(
-            new Observable((observer)=> {
+            new Observable((observer) => {
                 observer.next({
                     status: "SUCCESS",
-                    data: [
-                        {
-                            text: "candy #apple",
-                            hashtags : ["#apple"],
-                            key : "0"
-                        }
-                    ]
+                    data: exampleData()
                 });
             }));
         ({ getByTestId, queryByTestId } =   render(<App />, div));
@@ -85,25 +99,19 @@ describe("renders MainDumbViewLayer with data if username is set",()=>{
 });
 
 describe("handles fresh login situation", () => {
-    it("renders username form if no local username found",()=>{
+    it("renders username form if no local username found",() => {
         LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce(undefined);
         ({ getByTestId, queryByTestId } =   render(<App />, div));
         let usernameInput = queryByTestId("username-input");
         expect(usernameInput).toBeTruthy();
     });
-    it("updates username in storage upon login",()=>{
+    it("updates username in storage upon login",() => {
         LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce(undefined);
         DropBackendService.getUserDrops.mockReturnValueOnce(
-            new Observable((observer)=> {
+            new Observable((observer) => {
                 observer.next({
                     status: "SUCCESS",
-                    data: [
-                        {
-                            text: "candy #apple",
-                            hashtags : ["#apple"],
-                            key : "0"
-                        }
-                    ]
+                    data: exampleData()
                 });
             }));
         ({ getByTestId, queryByTestId } =   render(<App />, div));
@@ -114,20 +122,14 @@ describe("handles fresh login situation", () => {
         fireEvent.click(loginDoneButton);
         expect(LoginHelper.setLocalUsername.mock.calls.length).toBe(1);
     });
-    it("queries for data when user logs in",(done)=>{
+    it("queries for data when user logs in",(done) => {
         LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce(undefined);
         DropBackendService.getUserDrops.mockReturnValueOnce(
-            new Observable((observer)=> {
+            new Observable((observer) => {
                 done();
                 observer.next({
                     status: "SUCCESS",
-                    data: [
-                        {
-                            text: "candy #apple",
-                            hashtags : ["#apple"],
-                            key : "0"
-                        }
-                    ]
+                    data: exampleData()
                 });
             }));
         ({ getByTestId, queryByTestId } =   render(<App />, div));

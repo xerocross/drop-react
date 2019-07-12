@@ -3,6 +3,9 @@ import {cleanup,fireEvent,render, act} from '@testing-library/react';
 import MainDumbViewLayer from "./MainDumbViewLayer.jsx";
 import DropHashtagIntersect from "../helpers/DropHashtagIntersect.js";
 import $ from "jquery";
+import Store from "../store.js";
+import { Provider } from "react-redux";
+import {NEW_DROPTEXT, UPDATE_DROPS} from "../actions.js";
 
 let div;
 let getByTestId;
@@ -12,10 +15,12 @@ let container;
 let noop = ()=>{};
 let setProps = () => {
 }
+let store;
 let unsavedDrops = [];
 let trySaveUnsavedDrops = noop;
 
 beforeEach(()=>{
+    store = Store();
     setProps();
     div = document.createElement('div');
 })
@@ -29,7 +34,7 @@ let drops = [];
 let hashtags = [];
 
 test('renders without crashing', () => {
-    ({ getByTestId } = render(<MainDumbViewLayer
+    ({ getByTestId } = render(<Provider store={store}><MainDumbViewLayer
         droptext = {""}
         unsavedDrops = {[]}
         hashtags = {[]}
@@ -41,7 +46,7 @@ test('renders without crashing', () => {
         updateDroptext = {noop}
         createDrop = {noop}
         deleteDrop = {noop}
-    />, div) );
+    /></Provider>, div) );
 });
 describe("renders UnsavedDrops correctly", ()=>{
     test('if there are unsaved drops, then it renders UnsavedDrops', () => {
@@ -57,7 +62,7 @@ describe("renders UnsavedDrops correctly", ()=>{
                 key : "day"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {unsavedDrops}
@@ -70,11 +75,12 @@ describe("renders UnsavedDrops correctly", ()=>{
             updateDroptext = {noop}
             createDrop = {noop}
             deleteDrop = {noop}
-        />, div) );
+        /></ Provider>, div) );
     
         let unsavedDropsDiv = queryByTestId("unsaved-drops");
         expect(unsavedDropsDiv).toBeTruthy();
     });
+
     test('renders correct number of unsaved drops (2)', () => {
         unsavedDrops = [
             {
@@ -88,7 +94,7 @@ describe("renders UnsavedDrops correctly", ()=>{
                 key : "day"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {unsavedDrops}
@@ -101,7 +107,7 @@ describe("renders UnsavedDrops correctly", ()=>{
             updateDroptext = {noop}
             createDrop = {noop}
             deleteDrop = {noop}
-        />, div) );
+        /></ Provider>, div) );
     
         let unsavedDropsDiv = queryByTestId("unsaved-drops");
         let dropItems = $(".drop-item",unsavedDropsDiv);
@@ -110,7 +116,7 @@ describe("renders UnsavedDrops correctly", ()=>{
 
     test('if there are no unsaved drops, then it does not render UnsavedDrops', () => {
         unsavedDrops = [];
-        ({ getByTestId, queryByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {unsavedDrops}
@@ -123,7 +129,7 @@ describe("renders UnsavedDrops correctly", ()=>{
             updateDroptext = {noop}
             createDrop = {noop}
             deleteDrop = {noop}
-        />, div) );
+        /></ Provider>, div) );
     
         let unsavedDropsDiv = queryByTestId("unsaved-drops");
         expect(unsavedDropsDiv).toBeFalsy();
@@ -145,7 +151,7 @@ describe("renders UnsavedDrops correctly", ()=>{
                 key : "day"
             }
         ];
-        ({ getByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {unsavedDrops}
@@ -158,7 +164,7 @@ describe("renders UnsavedDrops correctly", ()=>{
             updateDroptext = {noop}
             createDrop = {noop}
             deleteDrop = {noop}
-        />, div) );
+        /></ Provider>, div) );
     
         let button = getByTestId("unsaved-drops-try-again");
         fireEvent.click(button);
@@ -185,7 +191,7 @@ describe("renders dropsearch correctly", ()=> {
                 key : "day"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {[]}
@@ -197,7 +203,7 @@ describe("renders dropsearch correctly", ()=> {
             createDrop = {noop}
             deleteDrop = {noop}
             updateDroptext = {updateDroptext}
-        />, div));
+        /></ Provider>, div));
         let dropSearchElement = queryByTestId("drop-search");
         expect(dropSearchElement).toBeTruthy();
     });
@@ -215,7 +221,7 @@ describe("renders dropsearch correctly", ()=> {
                 key : "day"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {[]}
@@ -227,7 +233,7 @@ describe("renders dropsearch correctly", ()=> {
             createDrop = {noop}
             deleteDrop = {noop}
             updateDroptext = {updateDroptext}
-        />, div));
+        /></ Provider>, div));
         let dropSearchElement = queryByTestId("drop-search");
         let dropListElement = $("[data-testid='drop-list']", dropSearchElement);
         let dropItems = $(".drop-item",dropListElement);
@@ -252,7 +258,7 @@ describe("renders dropsearch correctly", ()=> {
                 key : "time"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {[]}
@@ -264,7 +270,7 @@ describe("renders dropsearch correctly", ()=> {
             createDrop = {noop}
             deleteDrop = {noop}
             updateDroptext = {updateDroptext}
-        />, div));
+        /></ Provider>, div));
         let dropSearchElement = queryByTestId("drop-search");
         let dropListElement = $("[data-testid='drop-list']", dropSearchElement);
         let dropItems = $(".drop-item",dropListElement);
@@ -275,7 +281,7 @@ describe("renders dropsearch correctly", ()=> {
 
 describe("renders MainTextInput correctly",()=>{
     test('renders MainTextInput', () => {
-        ({ getByTestId, queryByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {[]}
@@ -287,7 +293,7 @@ describe("renders MainTextInput correctly",()=>{
             createDrop = {noop}
             deleteDrop = {noop}
             updateDroptext = {updateDroptext}
-        />, div));
+        /></ Provider>, div));
         let mainTextInputElt = queryByTestId("main-text-input");
         expect(mainTextInputElt).toBeTruthy();
     });
@@ -296,7 +302,7 @@ describe("renders MainTextInput correctly",()=>{
         let updateDroptext = function () {
             done();
         };
-        ({ getByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {[]}
@@ -308,7 +314,7 @@ describe("renders MainTextInput correctly",()=>{
             createDrop = {noop}
             deleteDrop = {noop}
             updateDroptext = {updateDroptext}
-        />, div));
+        /></ Provider>, div));
         let mainTextarea = getByTestId("main-drop-textarea");
         fireEvent.change(mainTextarea, { target: { value: "apple #candy" } })
     });
@@ -316,7 +322,7 @@ describe("renders MainTextInput correctly",()=>{
         let createDrop = function () {
             done();
         };
-        ({ getByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = {""}
             hashtags = {[]}
             unsavedDrops = {[]}
@@ -328,14 +334,14 @@ describe("renders MainTextInput correctly",()=>{
             pushNewStatusMessage = {noop}
             createDrop = {createDrop}
             deleteDrop = {noop}
-        />, div));
+        /></ Provider>, div));
         let mainTextarea = getByTestId("main-drop-textarea");
         fireEvent.change(mainTextarea, { target: { value: "apple #candy" } })
         let dropButton = getByTestId("drop-button");
         fireEvent.click(dropButton);
     });
     test('renders MainTextInput with text from droptext state', () => {
-        ({ getByTestId, queryByTestId } = render(<MainDumbViewLayer
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><MainDumbViewLayer
             droptext = "apple"
             hashtags = {[]}
             unsavedDrops = {[]}
@@ -347,7 +353,7 @@ describe("renders MainTextInput correctly",()=>{
             createDrop = {noop}
             deleteDrop = {noop}
             updateDroptext = {updateDroptext}
-        />, div));
+        /></ Provider>, div));
         let mainTextInputElt = getByTestId("main-text-input");
         let textInput = $("[data-testid='main-drop-textarea']", mainTextInputElt).eq(0);
         expect(textInput.val()).toBe("apple");

@@ -3,9 +3,13 @@ import {cleanup,fireEvent,render} from '@testing-library/react';
 import LoginLayer from "./LoginLayer.jsx";
 import Observable from "../helpers/Observable";
 import $ from "jquery";
+import Store from "../store.js";
+import { Provider } from "react-redux";
+import {NEW_DROPTEXT, UPDATE_DROPS} from "../actions.js";
 
 let getByTestId, queryByTestId;
 let container;
+let store;
 let noop = ()=>{};
 let div;
 let setProps = () => {};
@@ -21,6 +25,7 @@ let LoginHelper = {
 let DropBackendService;
 
 beforeEach(()=>{
+    store = Store();
     div = document.createElement('div');
     setProps();
     DropBackendService = {
@@ -35,7 +40,7 @@ afterEach(() => {
 });
 
 test('renders without crashing', () => {
-    ({getByTestId} = render(<LoginLayer 
+    ({getByTestId} = render(<Provider store={store}><LoginLayer 
         pushNewStatusMessage = {noop}
         DropBackendService = {DropBackendService}
         updateDrops = {noop}
@@ -54,11 +59,11 @@ test('renders without crashing', () => {
         updateIsUsernameSet = {noop}
         isUsernameSet = {true}
         LoginHelper = {LoginHelper}
-    />, div));
+    /></ Provider>, div ));
 });
 
 test('renders BackendCommunicationLayer if isUsernameSet', () => {
-    ({getByTestId, queryByTestId} = render(<LoginLayer 
+    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
         pushNewStatusMessage = {noop}
         DropBackendService = {DropBackendService}
         updateDrops = {noop}
@@ -77,14 +82,14 @@ test('renders BackendCommunicationLayer if isUsernameSet', () => {
         updateIsUsernameSet = {noop}
         isUsernameSet = {true}
         LoginHelper = {LoginHelper}
-    />, div ));
+    /></ Provider>, div  ));
 
     let elt = queryByTestId("BackendCommunicationLayer");
     expect(elt).toBeTruthy();
 });
 
 test('does not render BackendCommunicationLayer if isUsernameSet is false', () => {
-    ({getByTestId, queryByTestId} = render(<LoginLayer 
+    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
         pushNewStatusMessage = {noop}
         DropBackendService = {DropBackendService}
         updateDrops = {noop}
@@ -103,14 +108,14 @@ test('does not render BackendCommunicationLayer if isUsernameSet is false', () =
         updateIsUsernameSet = {noop}
         isUsernameSet = {false}
         LoginHelper = {LoginHelper}
-    />, div ));
+    /></ Provider>, div  ));
 
     let elt = queryByTestId("BackendCommunicationLayer");
     expect(elt).toBeFalsy();
 });
 
 test('renders LoginBar', () => {
-    ({getByTestId, queryByTestId} = render(<LoginLayer 
+    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
         pushNewStatusMessage = {noop}
         DropBackendService = {DropBackendService}
         updateDrops = {noop}
@@ -129,7 +134,7 @@ test('renders LoginBar', () => {
         updateIsUsernameSet = {noop}
         isUsernameSet = {false}
         LoginHelper = {LoginHelper}
-    />, div ));
+    /></ Provider>, div  ));
 
     let elt = queryByTestId("LoginBar");
     expect(elt).toBeTruthy();
@@ -139,7 +144,7 @@ test('tries to get username from local storage on mount', (done) => {
     LoginHelper.tryToGetUsernameFromStorage = () => {
         done();
     }
-    ({getByTestId, queryByTestId} = render(<LoginLayer 
+    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
         pushNewStatusMessage = {noop}
         DropBackendService = {DropBackendService}
         updateDrops = {noop}
@@ -158,7 +163,7 @@ test('tries to get username from local storage on mount', (done) => {
         updateIsUsernameSet = {noop}
         isUsernameSet = {false}
         LoginHelper = {LoginHelper}
-    />, div ));
+    /></ Provider>, div  ));
 });
 
 test('updates state username if username is found in local storage', (done) => {
@@ -169,7 +174,7 @@ test('updates state username if username is found in local storage', (done) => {
         expect(newVal).toBe("adam");
         done();
     }
-    ({getByTestId, queryByTestId} = render(<LoginLayer 
+    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
         pushNewStatusMessage = {noop}
         DropBackendService = {DropBackendService}
         updateDrops = {noop}
@@ -188,7 +193,7 @@ test('updates state username if username is found in local storage', (done) => {
         updateIsUsernameSet = {noop}
         isUsernameSet = {false}
         LoginHelper = {LoginHelper}
-    />, div ));
+    /></ Provider>, div  ));
 });
 
 test('updates isUsernameSet to false if click logout/change username button', (done) => {
@@ -199,7 +204,7 @@ test('updates isUsernameSet to false if click logout/change username button', (d
     LoginHelper.tryToGetUsernameFromStorage = () => {
         return undefined;
     }
-    ({getByTestId, queryByTestId} = render(<LoginLayer 
+    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
         pushNewStatusMessage = {noop}
         DropBackendService = {DropBackendService}
         updateDrops = {noop}
@@ -218,7 +223,7 @@ test('updates isUsernameSet to false if click logout/change username button', (d
         updateIsUsernameSet = {updateIsUsernameSet}
         isUsernameSet = {true}
         LoginHelper = {LoginHelper}
-    />, div ));
+    /></ Provider>, div  ));
     let logoutButton = getByTestId("logout-button");
     fireEvent.click(logoutButton);
 });
@@ -231,7 +236,7 @@ test('calls updateUsername if username-input is changed', (done) => {
     LoginHelper.tryToGetUsernameFromStorage = () => {
         return undefined;
     }
-    ({getByTestId, queryByTestId} = render(<LoginLayer 
+    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
         pushNewStatusMessage = {noop}
         DropBackendService = {DropBackendService}
         updateDrops = {noop}
@@ -250,7 +255,7 @@ test('calls updateUsername if username-input is changed', (done) => {
         updateIsUsernameSet = {noop}
         isUsernameSet = {false}
         LoginHelper = {LoginHelper}
-    />, div ));
+    /></ Provider>, div  ));
     let usernameInput = getByTestId("username-input");
     fireEvent.change(usernameInput, { target: { value: "paul" } });
 });
@@ -263,7 +268,7 @@ test('calls updateIsUsernameSet true if click login-done-button button', (done) 
         expect(val).toBe(true);
         done();
     }
-    ({getByTestId, queryByTestId} = render(<LoginLayer 
+    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
         pushNewStatusMessage = {noop}
         DropBackendService = {DropBackendService}
         updateDrops = {noop}
@@ -282,7 +287,7 @@ test('calls updateIsUsernameSet true if click login-done-button button', (done) 
         updateIsUsernameSet = {updateIsUsernameSet}
         isUsernameSet = {false}
         LoginHelper = {LoginHelper}
-    />, div ));
+    /></ Provider>, div  ));
     let loginDoneButton = getByTestId("login-done-button");
     fireEvent.click(loginDoneButton);
 });

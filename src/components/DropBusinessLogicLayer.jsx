@@ -3,38 +3,25 @@ import BaseComponent from "./BaseComponent.jsx";
 import HashtagHelpers from "../helpers/HashtagHelper.js";
 import MainDumbViewLayer from "./MainDumbViewLayer.jsx";
 import DropNote from "../helpers/DropNote.js";
+import {NEW_DROPTEXT} from  "../actions.js";
+import { connect } from "react-redux";
 
-export default class DropBusinessLogicLayer extends BaseComponent {
+class DropBusinessLogicLayer extends BaseComponent {
     constructor (props) {
         super(props);
         this.bindOwn(["updateDroptext", "createDrop", "deleteDrop"]);
-        this.bindOwn(["getSelectedDrops"]);
+        this.bindOwn([]);
+        this.state = {
+            testVal : ["a", "b"]
+        }
     }
 
-    get hashtags () {
-        return HashtagHelpers.parse(this.props.droptext);
-    }
-
-    updateDroptext (droptext) {
-        this.props.updateDroptext(droptext);
+    updateDroptext (text) {
+        this.props.NEW_DROPTEXT(text);
     }
 
     deleteDrop (drop) {
         this.props.deleteDrop(drop);
-    }
-
-    getSelectedDrops (droplist, hashtags) {
-        let selectedDrops = droplist.slice();
-        let test = (hashtags, tag) => {
-            return (hashtags.indexOf(tag) > -1);
-        }
-        for (let tag of hashtags) {
-            selectedDrops = selectedDrops.filter((drop) => (test(HashtagHelpers.parse(drop.text), tag)));
-        }
-        return selectedDrops;
-    }
-    get selectedDrops () {
-        return this.getSelectedDrops(this.props.drops, this.hashtags);
     }
 
     createDrop (text) {
@@ -53,22 +40,38 @@ export default class DropBusinessLogicLayer extends BaseComponent {
     }
 
     render () {
-        this.runRenderValidation();
         return (
             <div className="drop-main">
                 <MainDumbViewLayer 
                     unsavedDrops = {this.props.unsavedDrops}
                     droptext = {this.props.droptext}
                     updateDroptext = {this.updateDroptext}
-                    selectedDrops = {this.selectedDrops}
+                    selectedDrops = {this.props.selectedDrops}
                     drops = {this.props.drops}
                     isSyncing = {this.props.isSyncing}
                     username = {this.props.username}
                     createDrop = {this.createDrop}
                     deleteDrop = {this.deleteDrop}
-                    hashtags = {this.hashtags}
+                    hashtags = {this.props.hashtags}
                 />
             </div>
         );
     }
 }
+const mapStateToProps = (state, ownProps) => {
+    return {
+        droptext : state.droptext,
+        drops: state.drops,
+        hashtags : state.hashtags,
+        selectedDrops : state.selectedDrops,
+        isSyncing : state.isSyncing
+    }
+};
+  
+const mapDispatchToProps = {
+    // COMMIT, GO_BACK, GO_FORWARD, RESET, CLEAR_ALL
+    NEW_DROPTEXT
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(DropBusinessLogicLayer);

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import "./MainTextInput.scss";
-
-export default class MainTextInput extends Component {
+import HashtagList from "./HashtagList.jsx";
+import { connect } from "react-redux";
+class MainTextInput extends Component {
 
     constructor() {
         super();
@@ -44,20 +45,15 @@ export default class MainTextInput extends Component {
                         drop
                     </button>
                 </div>
-                <div 
-                    data-testid="hashtag-list"
-                    className="hashtag-list"
-                >
-                    {
-                        this.props.hashtags.map(tag=> {
-                            return (
-                                <span key = {tag} data-testid="hashtag" className="hashtag">{tag}</span>
-                            );
-                        })
-                    }
-                </div>
+                <HashtagList />
             </div>
         )
     }
 
 }
+const mapStateToProps = (state, ownProps) => ({
+    droptext : ownProps.droptext
+})
+const mapDispatchToProps = {
+}
+export default connect(mapStateToProps, mapDispatchToProps)(MainTextInput);

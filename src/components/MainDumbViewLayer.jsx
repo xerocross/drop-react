@@ -38,12 +38,10 @@ export default class MainDumbViewLayer extends BaseComponent {
                         droptext = {this.props.droptext}
                     />
                     <DropSearch 
-                        drops = {this.props.drops}
-                        searchText = {this.props.droptext}
-                        selectedDrops = {this.props.selectedDrops}
                         deleteDrop = {this.deleteDrop}
                         hashtags = {this.props.hashtags}
                         isSyncing = {this.props.isSyncing}
+                        selectedDrops = {this.props.selectedDrops}
                     />
                 </div>
                 { this.props.unsavedDrops.length > 0 &&

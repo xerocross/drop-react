@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import DropList from "./DropList";
-
-export default class DropSearch extends Component {
+import { connect } from "react-redux";
+class DropSearch extends Component {
     render () {
         return (
             <div className = "drop-search"
@@ -16,3 +16,9 @@ export default class DropSearch extends Component {
         )
     }
 }
+const mapStateToProps = (state, ownProps) => ({
+    selectedDrops : ownProps.selectedDrops
+})
+const mapDispatchToProps = {
+}
+export default connect(mapStateToProps, mapDispatchToProps)(DropSearch);

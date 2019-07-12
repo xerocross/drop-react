@@ -3,6 +3,8 @@ export default {
     SENDING_DROP : "sending drop to server",
     CONFIRM_DELETE_DROP : "Really delete this drop?",
     DELETE_DROP_STATUS : "deleting drop",
+    DROP_WAS_DELETED : "drop deleted",
+    DROP_SAVED_SUCCESS : "drop saved",
     IS_SYNCED_MESSAGE : "synced",
     FATAL_ERR : "could not reach the server; please refresh when online again",
     IS_SYNCING_MESSAGE : "syncing...",

@@ -2,8 +2,9 @@ import React from "react";
 import BaseComponent from "./BaseComponent.jsx";
 import LoginBar from "./LoginBar";
 import BackendCommunicationLayer from "./BackendCommunicationLayer";
+import { connect } from "react-redux";
 
-export default class LoginLayer extends BaseComponent {
+class LoginLayer extends BaseComponent {
     constructor (props) {
         super(props);
         this.updateUsername = this.updateUsername.bind(this);
@@ -54,10 +55,8 @@ export default class LoginLayer extends BaseComponent {
                         username = {this.props.username}
                         pushNewStatusMessage = {this.props.pushNewStatusMessage}
                         changeUser = {this.changeUser}
-                        drops = {this.props.drops}
                         DropBackendService = {this.props.DropBackendService}
                         setFatalError = {this.props.setFatalError}
-                        updateDrops = {this.props.updateDrops}
                         droptext = {this.props.droptext}
                         isSyncing = {this.props.isSyncing}
                         unsavedDrops = {this.props.unsavedDrops}
@@ -73,3 +72,10 @@ export default class LoginLayer extends BaseComponent {
         );
     }
 }
+const mapStateToProps = (state, ownProps) => ({
+});
+  
+const mapDispatchToProps = {
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginLayer);

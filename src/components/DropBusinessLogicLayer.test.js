@@ -2,12 +2,16 @@ import React from 'react';
 import {cleanup,fireEvent,render, act} from '@testing-library/react';
 import DropBusinessLogicLayer from "./DropBusinessLogicLayer.jsx";
 import $ from "jquery";
+import Store from "../store.js";
+import { Provider } from "react-redux";
+import {NEW_DROPTEXT, UPDATE_DROPS} from "../actions.js";
 
 let div;
 let getByTestId, queryByTestId;
 let container;
+let store;
 
-let noop = ()=>{};
+let noop = () => {};
 let drops = [];
 let drops_nonempty = [
     {
@@ -27,7 +31,8 @@ let drops_nonempty = [
     }
 ];
 
-beforeEach(()=>{
+beforeEach(() => {
+    store = Store();
     div = document.createElement('div');
 })
 
@@ -37,11 +42,9 @@ afterEach(() => {
 
 
 test('renders without crashing', () => {
-    ({ getByTestId } = render(<DropBusinessLogicLayer
+    ({ getByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
         unsavedDrops = {[]}
-        drops = {drops}
         isSyncing = {false}
-        droptext = {""}
         deleteDrop = {noop}
         createDrop = {noop}
         refreshDrops = {noop}
@@ -49,15 +52,13 @@ test('renders without crashing', () => {
         updateDroptext = {noop}
         username = {"adam"}
         updateUnsavedDrops = {noop}
-    />, div) );
+    /></Provider>, div) );
 });
 
 test('renders MainDumbViewLayer', () => {
-    ({ getByTestId, queryByTestId } = render(<DropBusinessLogicLayer
+    ({ getByTestId, queryByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
         unsavedDrops = {[]}
-        drops = {drops}
         isSyncing = {false}
-        droptext = {""}
         deleteDrop = {noop}
         createDrop = {noop}
         refreshDrops = {noop}
@@ -65,20 +66,20 @@ test('renders MainDumbViewLayer', () => {
         updateDroptext = {noop}
         username = {"adam"}
         updateUnsavedDrops = {noop}
-    />, div) );
+    /></Provider>, div) );
     let mainDumbViewLayer = queryByTestId("MainDumbViewLayer");
     expect(mainDumbViewLayer).toBeTruthy();
 });
 
 test('clicking drop button calls createDrop if some text is set', (done) => {
-    let createDrop = function() {
+    store.dispatch(NEW_DROPTEXT("apple"));
+    let createDrop = function () {
         done();
     };
-    ({ getByTestId, queryByTestId } = render(<DropBusinessLogicLayer
+    ({ getByTestId, queryByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
         unsavedDrops = {[]}
-        drops = {drops}
+        appAlert = {noop}
         isSyncing = {false}
-        droptext = {"apple"}
         deleteDrop = {noop}
         createDrop = {createDrop}
         refreshDrops = {noop}
@@ -86,21 +87,19 @@ test('clicking drop button calls createDrop if some text is set', (done) => {
         updateDroptext = {noop}
         username = {"adam"}
         updateUnsavedDrops = {noop}
-    />, div) );
+    /></Provider>, div) );
 
     let dropButton = getByTestId("drop-button");
     fireEvent.click(dropButton);
 });
 
 test('clicking drop button triggers alert if text is not set', (done) => {
-    let alert = function() {
+    let alert = function () {
         done();
     };
-    ({ getByTestId, queryByTestId } = render(<DropBusinessLogicLayer
+    ({ getByTestId, queryByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
         unsavedDrops = {[]}
-        drops = {drops}
         isSyncing = {false}
-        droptext = {""}
         appAlert = {alert}
         deleteDrop = {noop}
         createDrop = {noop}
@@ -109,22 +108,22 @@ test('clicking drop button triggers alert if text is not set', (done) => {
         updateDroptext = {noop}
         username = {"adam"}
         updateUnsavedDrops = {noop}
-    />, div) );
+    /></Provider>, div) );
 
     let dropButton = getByTestId("drop-button");
     fireEvent.click(dropButton);
 });
 
 test('clicking delete button calls deleteDrop', (done) => {
+    store.dispatch(UPDATE_DROPS(drops_nonempty));
+
     let deleteDrop = (drop) => {
         expect(drop.key).toBe("0");
         done();
     }
-    ({ getByTestId, queryByTestId } = render(<DropBusinessLogicLayer
+    ({ getByTestId, queryByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
         unsavedDrops = {[]}
-        drops = {drops_nonempty}
         isSyncing = {false}
-        droptext = {"apple"}
         deleteDrop = {deleteDrop}
         createDrop = {noop}
         refreshDrops = {noop}
@@ -132,7 +131,7 @@ test('clicking delete button calls deleteDrop', (done) => {
         updateDroptext = {noop}
         username = {"adam"}
         updateUnsavedDrops = {noop}
-    />, div) );
+    /></Provider>, div) );
     let dropSearchElt = getByTestId("drop-search");
     let dropRows = $(".drop-row", dropSearchElt);
     let delButtons = dropRows.find(".del-button");
@@ -140,7 +139,7 @@ test('clicking delete button calls deleteDrop', (done) => {
     fireEvent.click(firstDelButton);
 });
 
-describe("hashtag/drop intersection works as expected",()=>{
+describe("hashtag/drop intersection works as expected",() => {
 
     test('shows only drops matching one hashtag (1)', () => {
         drops = [
@@ -160,11 +159,11 @@ describe("hashtag/drop intersection works as expected",()=>{
                 key : "2"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<DropBusinessLogicLayer
+        store.dispatch(UPDATE_DROPS(drops));
+        store.dispatch(NEW_DROPTEXT("this is a #pear test string"));
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
             unsavedDrops = {[]}
-            drops = {drops}
             isSyncing = {false}
-            droptext = {"this is a #pear test string"}
             deleteDrop = {noop}
             createDrop = {noop}
             refreshDrops = {noop}
@@ -172,7 +171,7 @@ describe("hashtag/drop intersection works as expected",()=>{
             updateDroptext = {noop}
             username = {"adam"}
             updateUnsavedDrops = {noop}
-        />, div) );
+        /></Provider>, div) );
         let dropSearchElt = getByTestId("drop-search");
         let dropRows = $(".drop-row", dropSearchElt);
         expect(dropRows).toHaveLength(1);
@@ -198,11 +197,11 @@ describe("hashtag/drop intersection works as expected",()=>{
                 key : "2"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<DropBusinessLogicLayer
+        store.dispatch(UPDATE_DROPS(drops));
+        store.dispatch(NEW_DROPTEXT("this is a #pear test #apple"));
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
             unsavedDrops = {[]}
-            drops = {drops}
             isSyncing = {false}
-            droptext = {"this is a #pear test #apple"}
             deleteDrop = {noop}
             createDrop = {noop}
             refreshDrops = {noop}
@@ -210,7 +209,7 @@ describe("hashtag/drop intersection works as expected",()=>{
             updateDroptext = {noop}
             username = {"adam"}
             updateUnsavedDrops = {noop}
-        />, div) );
+        /></Provider>, div) );
         let dropSearchElt = getByTestId("drop-search");
         let dropRows = $(".drop-row", dropSearchElt);
         expect(dropRows).toHaveLength(1);
@@ -236,11 +235,13 @@ describe("hashtag/drop intersection works as expected",()=>{
                 key : "neither"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<DropBusinessLogicLayer
+        let droptext = "this is a test #apple";
+        store.dispatch(UPDATE_DROPS(drops));
+        store.dispatch(NEW_DROPTEXT(droptext));
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
             unsavedDrops = {[]}
             drops = {drops}
             isSyncing = {false}
-            droptext = {"this is a test #apple"}
             deleteDrop = {noop}
             createDrop = {noop}
             refreshDrops = {noop}
@@ -248,7 +249,7 @@ describe("hashtag/drop intersection works as expected",()=>{
             updateDroptext = {noop}
             username = {"adam"}
             updateUnsavedDrops = {noop}
-        />, div) );
+        /></Provider>, div) );
         let dropSearchElt = getByTestId("drop-search");
         let dropRows = $(".drop-row", dropSearchElt);
         expect(dropRows).toHaveLength(2);
@@ -274,11 +275,12 @@ describe("hashtag/drop intersection works as expected",()=>{
                 key : "neither"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<DropBusinessLogicLayer
+        let droptext = "this is a test apple";
+        store.dispatch(UPDATE_DROPS(drops));
+        store.dispatch(NEW_DROPTEXT(droptext));
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
             unsavedDrops = {[]}
-            drops = {drops}
             isSyncing = {false}
-            droptext = {"this is a test apple"}
             deleteDrop = {noop}
             createDrop = {noop}
             refreshDrops = {noop}
@@ -286,7 +288,7 @@ describe("hashtag/drop intersection works as expected",()=>{
             updateDroptext = {noop}
             username = {"adam"}
             updateUnsavedDrops = {noop}
-        />, div) );
+        /></Provider>, div) );
         let dropSearchElt = getByTestId("drop-search");
         let dropRows = $(".drop-row", dropSearchElt);
         expect(dropRows).toHaveLength(3);
@@ -310,11 +312,12 @@ describe("hashtag/drop intersection works as expected",()=>{
                 key : "2"
             }
         ];
-        ({ getByTestId, queryByTestId } = render(<DropBusinessLogicLayer
+        let droptext = "this is a test #pear and #watermelon";
+        store.dispatch(UPDATE_DROPS(drops));
+        store.dispatch(NEW_DROPTEXT(droptext));
+        ({ getByTestId, queryByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
             unsavedDrops = {[]}
-            drops = {drops}
             isSyncing = {false}
-            droptext = {"this is a test #pear and #watermelon"}
             deleteDrop = {noop}
             createDrop = {noop}
             refreshDrops = {noop}
@@ -322,7 +325,7 @@ describe("hashtag/drop intersection works as expected",()=>{
             updateDroptext = {noop}
             username = {"adam"}
             updateUnsavedDrops = {noop}
-        />, div) );
+        /></Provider>, div) );
         let dropSearchElt = getByTestId("drop-search");
         let dropRows = $(".drop-row", dropSearchElt);
         expect(dropRows).toHaveLength(0);

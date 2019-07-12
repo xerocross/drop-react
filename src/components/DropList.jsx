@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import DropDisplay from "./DropDisplay";
+import DropListInner from "./DropListInner.jsx";
 import "./DropList.scss";
 
 export default class DropList extends Component {
@@ -16,33 +17,10 @@ export default class DropList extends Component {
                 {this.props.isSyncing && 
                     <div className = "syncing-bar"></div>
                 }
-                <div className = "list">
-                    {
-                        this.props.drops.map((drop)=> {
-                            return (
-                                <div className = "drop-row"  key = {drop.key} data-dropkey={drop.key}>
-                                    <div className="drop-item"
-                                        
-                                    >
-                                        <DropDisplay 
-                                            drop = {drop}
-                                        />
-                                    </div>
-                                    <div
-                                        className="drop-delete"
-                                    >
-                                        <button 
-                                            onClick = {()=> this.props.deleteDrop(drop)}
-                                            className = "button del-button"    
-                                        >
-                                        del
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    }
-                </div>
+                <DropListInner
+                    drops = {this.props.drops}
+                    deleteDrop = {this.props.deleteDrop}
+                />
             </div>
         )
     }

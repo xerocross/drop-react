@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import "./StatusBar.scss";
 
 export default class StatusBar extends Component {
-    render() {
+    render () {
         return (
-            <div className="status-bar">
+            <div className="status-bar" data-testid = "StatusBar">
                 {
                     this.props.statusMessages.map((statusObj) => {
                         return (
