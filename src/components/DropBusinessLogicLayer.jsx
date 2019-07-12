@@ -11,9 +11,6 @@ class DropBusinessLogicLayer extends BaseComponent {
         super(props);
         this.bindOwn(["updateDroptext", "createDrop", "deleteDrop"]);
         this.bindOwn([]);
-        this.state = {
-            testVal : ["a", "b"]
-        }
     }
 
     updateDroptext (text) {
