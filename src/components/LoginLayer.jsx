@@ -3,13 +3,13 @@ import BaseComponent from "./BaseComponent.jsx";
 import LoginBar from "./LoginBar";
 import BackendCommunicationLayer from "./BackendCommunicationLayer";
 import { connect } from "react-redux";
+import { POST_USERNAME_SET, UNSET_USERNAME} from  "../actions.js";
 
 class LoginLayer extends BaseComponent {
     constructor (props) {
         super(props);
-        this.updateUsername = this.updateUsername.bind(this);
         this.tryToGetUsernameFromStorage = this.tryToGetUsernameFromStorage.bind(this);
-        this.changeUser = this.changeUser.bind(this);
+        this.unsetUsername = this.unsetUsername.bind(this);
         this.postNewUsername = this.postNewUsername.bind(this);
     }
 
@@ -17,25 +17,20 @@ class LoginLayer extends BaseComponent {
         this.tryToGetUsernameFromStorage();
     }
 
-    updateUsername (newValue) {
-        this.props.updateUsername(newValue);
-    }
-
     tryToGetUsernameFromStorage () {
         let username = this.props.LoginHelper.tryToGetUsernameFromStorage();
         if (username) {
-            this.updateUsername(username);
-            this.props.updateIsUsernameSet(true);
+            this.postNewUsername(username);
         }
     }
 
-    changeUser () {
-        this.props.updateIsUsernameSet(false);
+    unsetUsername () {
+        this.props.UNSET_USERNAME();
     }
 
-    postNewUsername () {
-        this.props.LoginHelper.setLocalUsername(this.props.username);
-        this.props.updateIsUsernameSet(true);
+    postNewUsername (newUsername) {
+        this.props.POST_USERNAME_SET(newUsername);
+        this.props.LoginHelper.setLocalUsername(newUsername);
     }
 
     render () {
@@ -44,9 +39,8 @@ class LoginLayer extends BaseComponent {
             <div data-testid = "LoginLayer">
                 <LoginBar 
                     username = {this.props.username}
-                    updateUsername = {this.updateUsername}
                     isUsernameSet = {this.props.isUsernameSet}
-                    changeUser = {this.changeUser}
+                    unsetUsername = {this.unsetUsername}
                     postNewUsername = {this.postNewUsername}
                 />
 
@@ -54,15 +48,8 @@ class LoginLayer extends BaseComponent {
                     <BackendCommunicationLayer 
                         username = {this.props.username}
                         pushNewStatusMessage = {this.props.pushNewStatusMessage}
-                        changeUser = {this.changeUser}
                         DropBackendService = {this.props.DropBackendService}
                         setFatalError = {this.props.setFatalError}
-                        droptext = {this.props.droptext}
-                        isSyncing = {this.props.isSyncing}
-                        unsavedDrops = {this.props.unsavedDrops}
-                        updateDroptext = {this.props.updateDroptext}
-                        createDrop = {this.props.createDrop}
-                        updateUnsavedDrops = {this.props.updateUnsavedDrops}
                         appAlert = {this.props.appAlert}
                         appConfirm = {this.props.appConfirm}
                     />
@@ -73,9 +60,12 @@ class LoginLayer extends BaseComponent {
     }
 }
 const mapStateToProps = (state, ownProps) => ({
+    username : state.username,
+    isUsernameSet : state.isUsernameSet
 });
   
 const mapDispatchToProps = {
+    POST_USERNAME_SET, UNSET_USERNAME
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginLayer);

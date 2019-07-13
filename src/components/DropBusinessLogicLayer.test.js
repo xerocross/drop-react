@@ -4,7 +4,7 @@ import DropBusinessLogicLayer from "./DropBusinessLogicLayer.jsx";
 import $ from "jquery";
 import Store from "../store.js";
 import { Provider } from "react-redux";
-import {NEW_DROPTEXT, UPDATE_DROPS} from "../actions.js";
+import {NEW_DROPTEXT, UPDATE_DROPS, ADD_UNSAVED_DROP} from "../actions.js";
 
 let div;
 let getByTestId, queryByTestId;
@@ -40,6 +40,17 @@ afterEach(() => {
     cleanup();
 });
 
+function renderWithOptions (config) {
+    return  render(<Provider store={store}><DropBusinessLogicLayer
+        deleteDrop = {noop}
+        createDrop = {noop}
+        refreshDrops = {noop}
+        updateDrops = {noop}
+        username = {config.username || undefined}
+    /></Provider>, div);
+}
+
+
 
 test('renders without crashing', () => {
     ({ getByTestId } = render(<Provider store={store}><DropBusinessLogicLayer
@@ -53,6 +64,29 @@ test('renders without crashing', () => {
         username = {"adam"}
         updateUnsavedDrops = {noop}
     /></Provider>, div) );
+});
+
+test('renders unsavedDrops if there is one', () => {
+    store.dispatch(ADD_UNSAVED_DROP(drops_nonempty[0]));
+    ({ getByTestId, queryByTestId } = renderWithOptions({}));
+    let elt = queryByTestId("unsaved-drops");
+    expect(elt).toBeTruthy();
+});
+
+test('does not render unsavedDrops if there arent any', () => {
+    ({ getByTestId, queryByTestId } = renderWithOptions({}));
+    let elt = queryByTestId("unsaved-drops");
+    expect(elt).toBeFalsy();
+});
+
+test('dispatches TRY_SAVE_UNSAVED_DROPS if user clicks try again', () => {
+    store.dispatch(ADD_UNSAVED_DROP(drops_nonempty[0]));
+    store.dispatch = jest.fn(store.dispatch);
+    ({ getByTestId, queryByTestId } = renderWithOptions({}));
+    let tryAgainButton =  getByTestId("unsaved-drops-try-again");
+    store.dispatch.mockClear();
+    fireEvent.click(tryAgainButton);
+    expect(store.dispatch.mock.calls[0][0].type).toBe("TRY_SAVE_UNSAVED_DROPS");
 });
 
 test('renders MainDumbViewLayer', () => {

@@ -145,6 +145,28 @@ describe("handles saveNewDrop correctly", () => {
         });
     });
 
+    it("dispatches ADD_UNSAVED_DROP if saving drop fails",() => {
+        let localObserver;
+        DropBackendService.saveNewDrop = (username) => {
+            return new Observable((observer) => {
+                localObserver = observer;
+            })
+        };
+        let droptext = "apple #candy";
+        store.dispatch(NEW_DROPTEXT(droptext));
+        store.dispatch = jest.fn(store.dispatch);
+        ({ getByTestId } = renderWithOptions({
+        }));
+        let dropButton = getByTestId("drop-button");
+        fireEvent.click(dropButton);
+        store.dispatch.mockClear();
+        localObserver.next({
+            status: "FAIL",
+        });
+        expect(store.dispatch.mock.calls.length).toBe(1);
+        expect(store.dispatch.mock.calls[0][0].type).toBe("ADD_UNSAVED_DROP");
+    });
+
     test('calls DropBackendService.saveNewDrop if text is set and user clicks "drop" button', (done) => {
         DropBackendService.saveNewDrop = (drop) => {
             return new Observable((observer) => {

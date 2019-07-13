@@ -5,32 +5,27 @@ import Observable from "../helpers/Observable";
 import $ from "jquery";
 import Store from "../store.js";
 import { Provider } from "react-redux";
-import {NEW_DROPTEXT, UPDATE_DROPS} from "../actions.js";
+import {POST_USERNAME_SET, UNSET_USERNAME} from "../actions.js";
 
 let getByTestId, queryByTestId;
-let container;
 let store;
-let noop = ()=>{};
+let noop = () => {};
 let div;
-let setProps = () => {};
 let LoginHelper = {
-    tryToGetUsernameFromStorage(){
+    tryToGetUsernameFromStorage (){
 
     },
-    setLocalUsername(){
-
+    setLocalUsername (){
     }
 }
 
 let DropBackendService;
 
-beforeEach(()=>{
+beforeEach(() => {
     store = Store();
     div = document.createElement('div');
-    setProps();
     DropBackendService = {
-        getUserDrops :  ()=> (new Observable((observer)=> {
-    
+        getUserDrops :  () => (new Observable((observer) => {
         }))
     };
 })
@@ -39,255 +34,117 @@ afterEach(() => {
     cleanup();
 });
 
+let renderWithOptions = (config) => {
+    return render(<Provider store={store}><LoginLayer 
+        pushNewStatusMessage = {config.pushNewStatusMessage || noop}
+        DropBackendService = {config.DropBackendService || DropBackendService}
+        updateDrops = {config.DropBackendService || noop}
+        unsavedDrops = {config.unsavedDrops || []}
+        updateDroptext = {config.updateDroptext || noop}
+        createDrop = {config.createDrop || noop}
+        updateUnsavedDrops = {config.updateUnsavedDrops || noop}
+        setFatalError = {config.setFatalError || noop}
+        appAlert = {config.appAlert || noop}
+        appConfirm = {config.appConfirm || noop}
+        LoginHelper = {config.LoginHelper || LoginHelper}
+    /></ Provider>, div );
+}
+
 test('renders without crashing', () => {
-    ({getByTestId} = render(<Provider store={store}><LoginLayer 
-        pushNewStatusMessage = {noop}
-        DropBackendService = {DropBackendService}
-        updateDrops = {noop}
-        drops = {[]}
-        droptext = {""}
-        isSyncing = {false}
-        unsavedDrops = {[]}
-        updateDroptext = {noop}
-        createDrop = {noop}
-        updateUnsavedDrops = {noop}
-        setFatalError = {noop}
-        appAlert = {noop}
-        appConfirm = {noop}
-        updateUsername = {noop}
-        username = {""}
-        updateIsUsernameSet = {noop}
-        isUsernameSet = {true}
-        LoginHelper = {LoginHelper}
-    /></ Provider>, div ));
+    renderWithOptions({});
 });
 
 test('renders BackendCommunicationLayer if isUsernameSet', () => {
-    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
-        pushNewStatusMessage = {noop}
-        DropBackendService = {DropBackendService}
-        updateDrops = {noop}
-        drops = {[]}
-        droptext = {""}
-        isSyncing = {false}
-        unsavedDrops = {[]}
-        updateDroptext = {noop}
-        createDrop = {noop}
-        updateUnsavedDrops = {noop}
-        setFatalError = {noop}
-        appAlert = {noop}
-        appConfirm = {noop}
-        updateUsername = {noop}
-        username = {""}
-        updateIsUsernameSet = {noop}
-        isUsernameSet = {true}
-        LoginHelper = {LoginHelper}
-    /></ Provider>, div  ));
-
+    store.dispatch(POST_USERNAME_SET("adam"));
+    ({getByTestId, queryByTestId} = renderWithOptions({}));
     let elt = queryByTestId("BackendCommunicationLayer");
     expect(elt).toBeTruthy();
 });
 
-test('does not render BackendCommunicationLayer if isUsernameSet is false', () => {
-    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
-        pushNewStatusMessage = {noop}
-        DropBackendService = {DropBackendService}
-        updateDrops = {noop}
-        drops = {[]}
-        droptext = {""}
-        isSyncing = {false}
-        unsavedDrops = {[]}
-        updateDroptext = {noop}
-        createDrop = {noop}
-        updateUnsavedDrops = {noop}
-        setFatalError = {noop}
-        appAlert = {noop}
-        appConfirm = {noop}
-        updateUsername = {noop}
-        username = {""}
-        updateIsUsernameSet = {noop}
-        isUsernameSet = {false}
-        LoginHelper = {LoginHelper}
-    /></ Provider>, div  ));
-
+test('does not render BackendCommunicationLayer if username is unset', () => {
+    store.dispatch(UNSET_USERNAME("adam"));
+    ({getByTestId, queryByTestId} = renderWithOptions({}));
     let elt = queryByTestId("BackendCommunicationLayer");
     expect(elt).toBeFalsy();
 });
 
 test('renders LoginBar', () => {
-    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
-        pushNewStatusMessage = {noop}
-        DropBackendService = {DropBackendService}
-        updateDrops = {noop}
-        drops = {[]}
-        droptext = {""}
-        isSyncing = {false}
-        unsavedDrops = {[]}
-        updateDroptext = {noop}
-        createDrop = {noop}
-        updateUnsavedDrops = {noop}
-        setFatalError = {noop}
-        appAlert = {noop}
-        appConfirm = {noop}
-        updateUsername = {noop}
-        username = {""}
-        updateIsUsernameSet = {noop}
-        isUsernameSet = {false}
-        LoginHelper = {LoginHelper}
-    /></ Provider>, div  ));
-
+    ({getByTestId, queryByTestId} = renderWithOptions({}));
     let elt = queryByTestId("LoginBar");
     expect(elt).toBeTruthy();
 });
 
-test('tries to get username from local storage on mount', (done) => {
-    LoginHelper.tryToGetUsernameFromStorage = () => {
-        done();
-    }
-    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
-        pushNewStatusMessage = {noop}
-        DropBackendService = {DropBackendService}
-        updateDrops = {noop}
-        drops = {[]}
-        droptext = {""}
-        isSyncing = {false}
-        unsavedDrops = {[]}
-        updateDroptext = {noop}
-        createDrop = {noop}
-        updateUnsavedDrops = {noop}
-        setFatalError = {noop}
-        appAlert = {noop}
-        appConfirm = {noop}
-        updateUsername = {noop}
-        username = {""}
-        updateIsUsernameSet = {noop}
-        isUsernameSet = {false}
-        LoginHelper = {LoginHelper}
-    /></ Provider>, div  ));
+test('tries to get username from local storage on mount', () => {
+    LoginHelper.tryToGetUsernameFromStorage = jest.fn();
+    ({getByTestId, queryByTestId} = renderWithOptions({
+        LoginHelper : LoginHelper
+    }));
+    expect(LoginHelper.tryToGetUsernameFromStorage.mock.calls.length).toBe(1)
 });
 
-test('updates state username if username is found in local storage', (done) => {
-    LoginHelper.tryToGetUsernameFromStorage = (done) => {
-        return "adam";
-    }
-    let updateUsername = (newVal)=>{
-        expect(newVal).toBe("adam");
-        done();
-    }
-    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
-        pushNewStatusMessage = {noop}
-        DropBackendService = {DropBackendService}
-        updateDrops = {noop}
-        drops = {[]}
-        droptext = {""}
-        isSyncing = {false}
-        unsavedDrops = {[]}
-        updateDroptext = {noop}
-        createDrop = {noop}
-        updateUnsavedDrops = {noop}
-        setFatalError = {noop}
-        appAlert = {noop}
-        appConfirm = {noop}
-        updateUsername = {updateUsername}
-        username = {""}
-        updateIsUsernameSet = {noop}
-        isUsernameSet = {false}
-        LoginHelper = {LoginHelper}
-    /></ Provider>, div  ));
+test('dispatches POST_USERNAME_SET if username is found in local storage', (done) => {
+    LoginHelper.tryToGetUsernameFromStorage = jest.fn();
+    LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce("adam");
+    store.dispatch = jest.fn();
+    ({getByTestId, queryByTestId} = renderWithOptions({
+        LoginHelper : LoginHelper
+    }));
+    store.dispatch.mock.calls.forEach(call => {
+        if (call[0].type === "POST_USERNAME_SET") {
+            expect(call[0].payload).toBe("adam");
+            done();
+        }
+    });
 });
 
-test('updates isUsernameSet to false if click logout/change username button', (done) => {
-    let updateIsUsernameSet = (newVal)=>{
-        expect(newVal).toBe(false);
-        done();
-    }
-    LoginHelper.tryToGetUsernameFromStorage = () => {
-        return undefined;
-    }
-    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
-        pushNewStatusMessage = {noop}
-        DropBackendService = {DropBackendService}
-        updateDrops = {noop}
-        drops = {[]}
-        droptext = {""}
-        isSyncing = {false}
-        unsavedDrops = {[]}
-        updateDroptext = {noop}
-        createDrop = {noop}
-        updateUnsavedDrops = {noop}
-        setFatalError = {noop}
-        appAlert = {noop}
-        appConfirm = {noop}
-        updateUsername = {noop}
-        username = {"adam"}
-        updateIsUsernameSet = {updateIsUsernameSet}
-        isUsernameSet = {true}
-        LoginHelper = {LoginHelper}
-    /></ Provider>, div  ));
+test('dispatches UNSET_USERNAME if user clicks logout/change username button', (done) => {
+    LoginHelper.tryToGetUsernameFromStorage = jest.fn();
+    LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce("adam");
+    store.dispatch = jest.fn(store.dispatch);
+    ({getByTestId, queryByTestId} = renderWithOptions({
+        LoginHelper : LoginHelper
+    }));
     let logoutButton = getByTestId("logout-button");
     fireEvent.click(logoutButton);
+    store.dispatch.mock.calls.forEach(call => {
+        if (call[0].type === "UNSET_USERNAME") {
+            done();
+        }
+    });
 });
 
-test('calls updateUsername if username-input is changed', (done) => {
-    let updateUsername = (newVal)=>{
-        expect(newVal).toBe("paul");
-        done();
-    }
-    LoginHelper.tryToGetUsernameFromStorage = () => {
-        return undefined;
-    }
-    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
-        pushNewStatusMessage = {noop}
-        DropBackendService = {DropBackendService}
-        updateDrops = {noop}
-        drops = {[]}
-        droptext = {""}
-        isSyncing = {false}
-        unsavedDrops = {[]}
-        updateDroptext = {noop}
-        createDrop = {noop}
-        updateUnsavedDrops = {noop}
-        setFatalError = {noop}
-        appAlert = {noop}
-        appConfirm = {noop}
-        updateUsername = {updateUsername}
-        username = {""}
-        updateIsUsernameSet = {noop}
-        isUsernameSet = {false}
-        LoginHelper = {LoginHelper}
-    /></ Provider>, div  ));
-    let usernameInput = getByTestId("username-input");
-    fireEvent.change(usernameInput, { target: { value: "paul" } });
-});
-
-test('calls updateIsUsernameSet true if click login-done-button button', (done) => {
-    LoginHelper.tryToGetUsernameFromStorage = () => {
-        return undefined;
-    }
-    let updateIsUsernameSet = (val) => {
-        expect(val).toBe(true);
-        done();
-    }
-    ({getByTestId, queryByTestId} = render(<Provider store={store}><LoginLayer 
-        pushNewStatusMessage = {noop}
-        DropBackendService = {DropBackendService}
-        updateDrops = {noop}
-        drops = {[]}
-        droptext = {""}
-        isSyncing = {false}
-        unsavedDrops = {[]}
-        updateDroptext = {noop}
-        createDrop = {noop}
-        updateUnsavedDrops = {noop}
-        setFatalError = {noop}
-        appAlert = {noop}
-        appConfirm = {noop}
-        updateUsername = {noop}
-        username = {"adam"}
-        updateIsUsernameSet = {updateIsUsernameSet}
-        isUsernameSet = {false}
-        LoginHelper = {LoginHelper}
-    /></ Provider>, div  ));
+test('dispatches POST_USERNAME_SET if user sets username value and clicks login-done-button button', (done) => {
+    LoginHelper.tryToGetUsernameFromStorage = jest.fn();
+    LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce(undefined);
+    store.dispatch = jest.fn(store.dispatch);
+    ({getByTestId, queryByTestId} = renderWithOptions({
+        LoginHelper : LoginHelper
+    }));
+    let usernameInput = getByTestId("username-input")
+    fireEvent.change(usernameInput, { target: { value: "andrew" } });
     let loginDoneButton = getByTestId("login-done-button");
+    store.dispatch.mockClear();
     fireEvent.click(loginDoneButton);
+    store.dispatch.mock.calls.forEach(call => {
+        if (call[0].type === "POST_USERNAME_SET") {
+            expect(call[0].payload).toBe("andrew");
+            done();
+        }
+    });
+});
+
+test('stores username locally if user sets username', () => {
+    LoginHelper.tryToGetUsernameFromStorage = jest.fn();
+    LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce(undefined);
+    store.dispatch = jest.fn(store.dispatch);
+    ({getByTestId, queryByTestId} = renderWithOptions({
+        LoginHelper : LoginHelper
+    }));
+    let usernameInput = getByTestId("username-input")
+    fireEvent.change(usernameInput, { target: { value: "andrew" } });
+    let loginDoneButton = getByTestId("login-done-button");
+    store.dispatch.mockClear();
+    LoginHelper.setLocalUsername = jest.fn();
+    fireEvent.click(loginDoneButton);
+    expect(LoginHelper.setLocalUsername.mock.calls[0][0]).toBe("andrew");
 });

@@ -1,16 +1,15 @@
 import React from "react";
 import BaseComponent from "./BaseComponent.jsx";
-import HashtagHelpers from "../helpers/HashtagHelper.js";
 import MainDumbViewLayer from "./MainDumbViewLayer.jsx";
 import DropNote from "../helpers/DropNote.js";
-import {NEW_DROPTEXT} from  "../actions.js";
+import {NEW_DROPTEXT, TRY_SAVE_UNSAVED_DROPS} from  "../actions.js";
 import { connect } from "react-redux";
 
 class DropBusinessLogicLayer extends BaseComponent {
     constructor (props) {
         super(props);
-        this.bindOwn(["updateDroptext", "createDrop", "deleteDrop"]);
-        this.bindOwn([]);
+        this.bindOwn(["updateDroptext", "createDrop", "deleteDrop", "trySaveUnsavedDrops"]);
+
     }
 
     updateDroptext (text) {
@@ -21,13 +20,17 @@ class DropBusinessLogicLayer extends BaseComponent {
         this.props.deleteDrop(drop);
     }
 
+    trySaveUnsavedDrops () {
+        this.props.TRY_SAVE_UNSAVED_DROPS();
+    }
+
     createDrop (text) {
         if (!text) {
             this.props.appAlert("Please add text to drop.");
             return false;
         } else if (!this.props.username) {
             this.log("create drop was called without username set; this should not occur;");
-            alert("Please select a username-password.");
+            this.props.appAlert("Please select a username-password.");
             return false;
         } else {
             let drop = new DropNote(text, this.props.username);
@@ -50,6 +53,7 @@ class DropBusinessLogicLayer extends BaseComponent {
                     createDrop = {this.createDrop}
                     deleteDrop = {this.deleteDrop}
                     hashtags = {this.props.hashtags}
+                    trySaveUnsavedDrops = {this.trySaveUnsavedDrops}
                 />
             </div>
         );
@@ -61,13 +65,13 @@ const mapStateToProps = (state, ownProps) => {
         drops: state.drops,
         hashtags : state.hashtags,
         selectedDrops : state.selectedDrops,
-        isSyncing : state.isSyncing
+        isSyncing : state.isSyncing,
+        unsavedDrops : state.unsavedDrops
     }
 };
   
 const mapDispatchToProps = {
-    // COMMIT, GO_BACK, GO_FORWARD, RESET, CLEAR_ALL
-    NEW_DROPTEXT
+    NEW_DROPTEXT, TRY_SAVE_UNSAVED_DROPS
 }
 
 

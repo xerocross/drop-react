@@ -4,7 +4,7 @@ import LocalStorageService from "./local-storage-service.js";
 import DropBusinessLogicLayer from "./DropBusinessLogicLayer.jsx";
 import HashtagHelper from "../helpers/HashtagHelper.js";
 import StringHash from "../helpers/string-hash.js";
-import {UPDATE_DROPS, SET_SYNCING, SET_IS_SYNCED} from  "../actions.js";
+import {UPDATE_DROPS, SET_SYNCING, SET_IS_SYNCED, ADD_UNSAVED_DROP} from  "../actions.js";
 import { connect } from "react-redux";
 
 let processIncomingDropList = function (droplist) {
@@ -141,6 +141,7 @@ class BackendCommunicationLayer extends BaseComponent {
     }
     
     postDropFailed (drop) {
+        this.props.ADD_UNSAVED_DROP(drop);
         this.deleteLocalDrop(drop._id);
         this.props.pushNewStatusMessage(this.COPY.POST_DROP_FAILED);
         let unsavedDrops = this.props.unsavedDrops.slice();
@@ -172,7 +173,6 @@ class BackendCommunicationLayer extends BaseComponent {
                     this.props.pushNewStatusMessage(this.COPY.SERVER_RESPONSE_ERROR);
                     break;
                 case "FAIL":
-                    debugger;
                     this.deleteDropFailed(drop, deletedLocal);
                     this.props.setFatalError();
                     break;
@@ -202,7 +202,6 @@ class BackendCommunicationLayer extends BaseComponent {
 
     createDrop (drop) {
         this.persistDropToDatabase(drop);
-        this.props.createDrop(drop);
     }
 
     deleteDrop (drop) {
@@ -221,7 +220,6 @@ class BackendCommunicationLayer extends BaseComponent {
         return (
             <div data-testid="BackendCommunicationLayer">
                 <DropBusinessLogicLayer
-                    unsavedDrops = {this.props.unsavedDrops}
                     deleteDrop = {this.deleteDrop}
                     createDrop = {this.createDrop}
                     refreshDrops = {this.refreshDrops}
@@ -239,7 +237,7 @@ const mapStateToProps = (state, ownProps) => ({
     isSyncing : state.isSyncing
 })
 const mapDispatchToProps = {
-    UPDATE_DROPS, SET_SYNCING, SET_IS_SYNCED
+    UPDATE_DROPS, SET_SYNCING, SET_IS_SYNCED, ADD_UNSAVED_DROP
 }
 
 

@@ -7,7 +7,10 @@ const initialState = (obj) => {
         drops : [],
         selectedDrops : [],
         hashtags : [],
-        isSyncing : false
+        isSyncing : false,
+        username : undefined,
+        isUsernameSet : false,
+        unsavedDrops : []
     });
 }
 
@@ -54,6 +57,8 @@ export default function (state, action) {
         return initialState({});
     }
     let newState = cloneObj(state);
+    let unsavedDrops;
+    let index;
     switch(action.type) {
     case "NEW_DROPTEXT":
         newState.droptext = action.payload;
@@ -69,6 +74,27 @@ export default function (state, action) {
         break;
     case "SET_IS_SYNCED":
         newState.isSyncing = false;
+        break;
+    case "POST_USERNAME_SET":
+        newState.isUsernameSet = true;
+        newState.username = action.payload;
+        break;
+    case "UNSET_USERNAME":
+        newState.isUsernameSet = false;
+        newState.usernam = undefined;
+        break;
+    case "ADD_UNSAVED_DROP":
+        unsavedDrops = state.unsavedDrops.slice();
+        unsavedDrops.push(action.payload);
+        newState.unsavedDrops = unsavedDrops;
+        break;
+    case "REMOVE_UNSAVED_DROP":
+        unsavedDrops = state.unsavedDrops.slice();
+        index = unsavedDrops.indexOf(action.payload);
+        if (index > -1) {
+            unsavedDrops.splice(index, 1);
+        }
+        state.unsavedDrops = unsavedDrops;
         break;
     default:
         break;

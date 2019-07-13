@@ -8,9 +8,9 @@ let queryByTestId;
 
 let setProps = () => {
 }
-const noop = ()=>{};
+const noop = () => {};
 
-beforeEach(()=>{
+beforeEach(() => {
     setProps();
     div = document.createElement('div');
 })
@@ -19,130 +19,107 @@ afterEach(() => {
     cleanup();
 });
 
-test('renders without crashing', () => {
-    const div = document.createElement('div');
-    render(<LoginBar 
-        username = {"adam"}
-        updateUsername = {noop}
-        isUsernameSet = {true}
-        changeUser = {noop}
-        postNewUsername = {noop}
+function renderWithOptions (config) {
+    return render(<LoginBar 
+        username = {config.username || undefined}
+        isUsernameSet = {config.isUsernameSet || undefined}
+        unsetUsername = {config.unsetUsername || noop}
+        postNewUsername = {config.postNewUsername || noop}
     />, div);
+}
 
+
+test('renders without crashing', () => {
+    renderWithOptions({
+        username : "adam"
+    });
 });
 
 test('if isUsernameSet then it shows logout/change user button', () => {
-    const div = document.createElement('div');
-    ({ getByTestId, queryByTestId } = render(<LoginBar 
-        username = {"adam"}
-        updateUsername = {noop}
-        isUsernameSet = {true}
-        changeUser = {noop}
-        postNewUsername = {noop}
-    />, div));
+    ({ getByTestId, queryByTestId } = renderWithOptions({
+        username : "adam",
+        isUsernameSet : true
+    }));
     let elt = queryByTestId("logout-button");
     expect(elt).toBeTruthy();
 });
 
 test('if isUsernameSet false then it does not show logout/change user button', () => {
-    const div = document.createElement('div');
-    ({ getByTestId, queryByTestId } = render(<LoginBar 
-        username = {"adam"}
-        updateUsername = {noop}
-        isUsernameSet = {false}
-        changeUser = {noop}
-        postNewUsername = {noop}
-    />, div));
+    ({ getByTestId, queryByTestId } = renderWithOptions({
+        username : "adam",
+        isUsernameSet : false
+    }));
     let elt = queryByTestId("logout-button");
     expect(elt).toBeFalsy();
 });
 
-test('if isUsernameSet false then it shows username form', () => {
-    const div = document.createElement('div');
-    ({ getByTestId, queryByTestId } = render(<LoginBar 
-        username = {"adam"}
-        updateUsername = {noop}
-        isUsernameSet = {false}
-        changeUser = {noop}
-        postNewUsername = {noop}
-    />, div));
-    let elt = queryByTestId("username-input");
+test('if isUsernameSet false then it renders NewUsernameForm', () => {
+    ({ getByTestId, queryByTestId } = renderWithOptions({
+        isUsernameSet : false
+    }));
+    let elt = queryByTestId("NewUsernameForm");
     expect(elt).toBeTruthy();
 });
 
 test('if isUsernameSet false then username form shows prop username value', () => {
-    const div = document.createElement('div');
-    ({ getByTestId, queryByTestId } = render(<LoginBar 
-        username = {"adam"}
-        updateUsername = {noop}
-        isUsernameSet = {false}
-        changeUser = {noop}
-        postNewUsername = {noop}
-    />, div));
+    ({ getByTestId, queryByTestId } = renderWithOptions({
+        isUsernameSet : false,
+        username : "adam"
+    }));
     let elt = queryByTestId("username-input");
     expect(elt.value).toBe("adam");
 });
 
 
 test('if isUsernameSet false then login-done-button shows', () => {
-    const div = document.createElement('div');
-    ({ getByTestId, queryByTestId } = render(<LoginBar 
-        username = {"adam"}
-        updateUsername = {noop}
-        isUsernameSet = {false}
-        changeUser = {noop}
-        postNewUsername = {noop}
-    />, div));
+    ({ getByTestId, queryByTestId } = renderWithOptions({
+        isUsernameSet : false,
+        username : "adam"
+    }));
     let elt = queryByTestId("login-done-button");
     expect(elt).toBeTruthy();
 });
 
 
 test('fire login-done-button then calls postNewUsername', (done) => {
-    const div = document.createElement('div');
-    let postNewUsername = ()=>{
+    let postNewUsername = () => {
         done();
     }
-    ({ getByTestId, queryByTestId } = render(<LoginBar 
-        username = {"adam"}
-        updateUsername = {noop}
-        isUsernameSet = {false}
-        changeUser = {noop}
-        postNewUsername = {postNewUsername}
-    />, div));
+    ({ getByTestId, queryByTestId } = renderWithOptions({
+        isUsernameSet : false,
+        username : "adam",
+        postNewUsername : postNewUsername
+    }));
     let elt = queryByTestId("login-done-button");
     fireEvent.click(elt);
 });
 
-test('changing value of username-input form calls updateUsername', (done) => {
-    const div = document.createElement('div');
-    let updateUsername = (val)=>{
+test('calls postNewUsername with the new username when user clicks done', (done) => {
+    let postNewUsername = (val) => {
         expect(val).toBe("apple");
         done();
     }
-    ({ getByTestId, queryByTestId } = render(<LoginBar 
-        username = {"adam"}
-        updateUsername = {updateUsername}
-        isUsernameSet = {false}
-        changeUser = {noop}
-        postNewUsername = {noop}
-    />, div));
+    ({ getByTestId, queryByTestId } = renderWithOptions({
+        isUsernameSet : false,
+        username : "adam",
+        postNewUsername : postNewUsername
+    }));
     let elt = queryByTestId("username-input");
     fireEvent.change(elt, { target: { value: "apple" } });
+    let doneButton = queryByTestId("login-done-button");
+    fireEvent.click(doneButton);
+
 });
 
-test('clicking logout button calls changeUser', (done) => {
-    const div = document.createElement('div');
-    let changeUser = (val)=>{
+test('clicking logout button calls unsetUsername', (done) => {
+    let unsetUsername = () => {
         done();
     }
-    ({ getByTestId, queryByTestId } = render(<LoginBar 
-        username = {"adam"}
-        updateUsername = {noop}
-        isUsernameSet = {true}
-        changeUser = {changeUser}
-        postNewUsername = {noop}
-    />, div));
+    ({ getByTestId, queryByTestId } = renderWithOptions({
+        isUsernameSet : true,
+        username : "adam",
+        unsetUsername : unsetUsername
+    }));
     let elt = queryByTestId("logout-button");
     fireEvent.click(elt);
 });
