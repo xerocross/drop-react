@@ -26,6 +26,7 @@ class LoginLayer extends BaseComponent {
 
     unsetUsername () {
         this.props.UNSET_USERNAME();
+        this.props.LoginHelper.unsetLocalUsername();
     }
 
     postNewUsername (newUsername) {

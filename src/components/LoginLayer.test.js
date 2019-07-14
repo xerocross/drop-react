@@ -12,12 +12,10 @@ let store;
 let noop = () => {};
 let div;
 let LoginHelper = {
-    tryToGetUsernameFromStorage (){
-
-    },
-    setLocalUsername (){
-    }
-}
+    tryToGetUsernameFromStorage: noop,
+    setLocalUsername: noop,
+    unsetLocalUsername : noop
+};
 
 let DropBackendService;
 

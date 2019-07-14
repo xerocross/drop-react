@@ -6,5 +6,8 @@ export default {
     },
     setLocalUsername (username) {
         LocalStorageUsername.setUsername(username);
+    },
+    unsetLocalUsername () {
+        LocalStorageUsername.setUsername(undefined);
     }
 }
