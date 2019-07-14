@@ -51,7 +51,6 @@ function getHashtags (previousState, state) {
     }
 }
 
-
 function getSelectedDrops (previousState, state) {
     if (previousState.hashtags === state.hashtags && previousState.drops === state.drops) {
         return previousState.selectedDrops;
@@ -59,7 +58,7 @@ function getSelectedDrops (previousState, state) {
     let hashtags = state.hashtags;
     let selectedDrops = state.drops.slice();
     function testFunc (drop, hashtag) {
-        let pattern = new RegExp(hashtag, "i");
+        let pattern = new RegExp(hashtag.substring(1), "i"); // cut off the '#' symbol
         return pattern.test(drop.text);
     }
     for (let tag of hashtags) {

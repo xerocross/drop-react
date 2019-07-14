@@ -235,6 +235,66 @@ describe("handles delete button interaction", () => {
 
 describe("handles hashtag/drop intersection as expected",() => {
 
+    describe("if searching drops without explicit hash marks", () => {
+        it('shows one matching drop with substring', () => {
+            drops = [
+                {
+                    text: "candy apple",
+                    hashtags : [],
+                    key : "0"
+                },
+                {
+                    text: "candy pear",
+                    hashtags : [],
+                    key : "1"
+                },
+                {
+                    text: "candy #watermelon",
+                    hashtags : ["#watermelon"],
+                    key : "2"
+                }
+            ];
+            store.dispatch(UPDATE_DROPS(drops));
+            store.dispatch(NEW_DROPTEXT("#pear"));
+            ({ getByTestId, queryByTestId } = renderWithOptions({
+            }) );
+            let dropSearchElt = getByTestId("drop-search");
+            let dropRows = $(".drop-row", dropSearchElt);
+            expect(dropRows).toHaveLength(1);
+            let elt = dropRows.eq(0);
+            expect(elt.attr("data-dropkey")).toBe(drops[1].key);
+        });
+        it('shows two matching drop with substring', () => {
+            drops = [
+                {
+                    text: "candy apple",
+                    hashtags : [],
+                    key : "0"
+                },
+                {
+                    text: "#candy pear",
+                    hashtags : [],
+                    key : "1"
+                },
+                {
+                    text: "#watermelon",
+                    hashtags : ["#watermelon"],
+                    key : "2"
+                }
+            ];
+            store.dispatch(UPDATE_DROPS(drops));
+            store.dispatch(NEW_DROPTEXT("#candy"));
+            ({ getByTestId, queryByTestId } = renderWithOptions({
+            }) );
+            let dropSearchElt = getByTestId("drop-search");
+            let dropRows = $(".drop-row", dropSearchElt);
+            expect(dropRows).toHaveLength(2);
+            expect(dropRows.eq(0).attr("data-dropkey")).toBe(drops[0].key);
+            expect(dropRows.eq(1).attr("data-dropkey")).toBe(drops[1].key);
+        });
+
+    });
+
     it('shows only drops matching one hashtag (1)', () => {
         drops = [
             {
@@ -263,6 +323,10 @@ describe("handles hashtag/drop intersection as expected",() => {
         let elt = dropRows.eq(0);
         expect(elt.attr("data-dropkey")).toBe(drops[1].key);
     });
+
+
+
+
 
     it('shows only drops matching two hashtags', () => {
         drops = [
