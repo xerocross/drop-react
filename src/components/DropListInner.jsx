@@ -3,11 +3,11 @@ import DropDisplay from "./DropDisplay";
 
 
 export default class DropListInner extends Component {
-    render() {
+    render () {
         return (
             <div className = "list">
                 {
-                    this.props.drops.map((drop)=> {
+                    this.props.drops.map((drop) => {
                         return (
                             <div className = "drop-row"  key = {drop.key} data-dropkey={drop.key}>
                                 <div className="drop-item"
@@ -17,16 +17,18 @@ export default class DropListInner extends Component {
                                         drop = {drop}
                                     />
                                 </div>
-                                <div
-                                    className="drop-delete"
-                                >
-                                    <button 
-                                        onClick = {()=> this.props.deleteDrop(drop)}
-                                        className = "button del-button"    
+                                { this.props.isCanDelete && 
+                                    <div
+                                        className="drop-delete"
                                     >
-                                        del
-                                    </button>
-                                </div>
+                                        <button 
+                                            onClick = {() => this.props.deleteDrop(drop)}
+                                            className = "button del-button"    
+                                        >
+                                            del
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         );
                     })

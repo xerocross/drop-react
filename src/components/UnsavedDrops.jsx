@@ -9,19 +9,20 @@ export default class UnsavedDrops extends BaseComponent {
                 data-testid = "unsaved-drops"
             >
                 <div className = "unsaved-drops-bar">
-                    <h2>Unsaved Drops</h2>
-                        
-                    <button 
+                    <label>saving these to database...</label>
+                    {/* <button 
                         onClick = {this.props.trySaveUnsavedDrops}
                         data-testid="unsaved-drops-try-again"
-                        className = "button"    
+                        className = "button unsaved-drops-try-again"    
                     >
                             try again
-                    </button>
+                    </button> */}
                 </div>
                 <DropList 
                     drops = {this.props.unsavedDrops}
                     deleteDrop = {this.props.deleteDrop}
+                    isSyncing = {true}
+                    isCanDelete = {false}
                 />
             </div>
         )

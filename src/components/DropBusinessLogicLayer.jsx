@@ -2,13 +2,14 @@ import React from "react";
 import BaseComponent from "./BaseComponent.jsx";
 import MainDumbViewLayer from "./MainDumbViewLayer.jsx";
 import DropNote from "../helpers/DropNote.js";
-import {NEW_DROPTEXT, TRY_SAVE_UNSAVED_DROPS} from  "../actions.js";
+import {NEW_DROPTEXT, CREATE_NEW_DROP, INIT_DELETE_DROP, TRY_SAVING_FAILED_DROPS_AGAIN} from  "../actions.js";
 import { connect } from "react-redux";
+import COPY from "../configuration/messages-copy.js";
 
 class DropBusinessLogicLayer extends BaseComponent {
     constructor (props) {
         super(props);
-        this.bindOwn(["updateDroptext", "createDrop", "deleteDrop", "trySaveUnsavedDrops"]);
+        this.bindOwn(["updateDroptext", "createDrop", "deleteDrop", "trySaveUnsavedDrops", "trySavingFailedDropsAgain"]);
 
     }
 
@@ -17,11 +18,16 @@ class DropBusinessLogicLayer extends BaseComponent {
     }
 
     deleteDrop (drop) {
-        this.props.deleteDrop(drop);
+        if (this.props.appConfirm(this.COPY.CONFIRM_DELETE_DROP)) {
+            this.props.INIT_DELETE_DROP();
+            this.props.deleteDrop(drop);
+        }
     }
 
-    trySaveUnsavedDrops () {
-        this.props.TRY_SAVE_UNSAVED_DROPS();
+    trySavingFailedDropsAgain () {
+        this.props.appAlert(COPY.TRY_SAVE_NOT_IMPLEMENTED);
+        this.props.TRY_SAVING_FAILED_DROPS_AGAIN();
+        this.props.trySavingFailedDropsAgain();
     }
 
     createDrop (text) {
@@ -34,6 +40,7 @@ class DropBusinessLogicLayer extends BaseComponent {
             return false;
         } else {
             let drop = new DropNote(text, this.props.username);
+            this.props.CREATE_NEW_DROP(drop);
             this.props.createDrop(drop);
             return true;
         }
@@ -53,7 +60,9 @@ class DropBusinessLogicLayer extends BaseComponent {
                     createDrop = {this.createDrop}
                     deleteDrop = {this.deleteDrop}
                     hashtags = {this.props.hashtags}
-                    trySaveUnsavedDrops = {this.trySaveUnsavedDrops}
+                    trySavingFailedDropsAgain = {this.trySavingFailedDropsAgain}
+                    dropsFailedToSave = {this.props.dropsFailedToSave}
+                    isTryingSaveAgain = {this.props.isTryingSaveAgain}
                 />
             </div>
         );
@@ -66,12 +75,14 @@ const mapStateToProps = (state, ownProps) => {
         hashtags : state.hashtags,
         selectedDrops : state.selectedDrops,
         isSyncing : state.isSyncing,
-        unsavedDrops : state.unsavedDrops
+        unsavedDrops : state.unsavedDrops,
+        dropsFailedToSave : state.dropsFailedToSave,
+        isTryingSaveAgain : state.isTryingSaveAgain
     }
 };
   
 const mapDispatchToProps = {
-    NEW_DROPTEXT, TRY_SAVE_UNSAVED_DROPS
+    NEW_DROPTEXT, CREATE_NEW_DROP, INIT_DELETE_DROP, TRY_SAVING_FAILED_DROPS_AGAIN
 }
 
 

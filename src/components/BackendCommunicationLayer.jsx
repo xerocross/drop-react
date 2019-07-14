@@ -4,7 +4,8 @@ import LocalStorageService from "./local-storage-service.js";
 import DropBusinessLogicLayer from "./DropBusinessLogicLayer.jsx";
 import HashtagHelper from "../helpers/HashtagHelper.js";
 import StringHash from "../helpers/string-hash.js";
-import {UPDATE_DROPS, SET_SYNCING, SET_IS_SYNCED, ADD_UNSAVED_DROP} from  "../actions.js";
+import {UPDATE_DROPS, SET_SYNCING, SET_IS_SYNCED, ADD_UNSAVED_DROP, DROP_SUCCESSFULLY_SAVED,
+    ATTEMPT_SAVE_DROP, DROP_FAILED_TO_SAVE} from  "../actions.js";
 import { connect } from "react-redux";
 
 let processIncomingDropList = function (droplist) {
@@ -25,8 +26,7 @@ class BackendCommunicationLayer extends BaseComponent {
         }
         this.bindOwn([
             "updateDroptext",
-            "trySaveUnsavedDrops",
-            "trySaveUnsavedDrops",
+            "trySavingFailedDropsAgain",
             "mergeDropsIntoLocal",
             "persistDropToDatabase",
             "createDrop",
@@ -42,11 +42,11 @@ class BackendCommunicationLayer extends BaseComponent {
         this.props.updateDroptext(droptext);
     }
 
-    trySaveUnsavedDrops () {
-        let unsavedDrops = this.props.unsavedDrops.slice();
-        for (let drop of unsavedDrops) {
-            this.persistNewDrop(drop)
-        }
+    trySavingFailedDropsAgain () {
+        // let unsavedDrops = this.props.unsavedDrops.slice();
+        // for (let drop of unsavedDrops) {
+        //     this.persistNewDrop(drop)
+        // }
     }
 
     mergeDropsIntoLocal (dropList) {
@@ -66,14 +66,15 @@ class BackendCommunicationLayer extends BaseComponent {
     }
     
     persistDropToDatabase (drop) {
+        this.props.ATTEMPT_SAVE_DROP(drop);
         this.props.pushNewStatusMessage(this.COPY.SENDING_DROP);
         let observable = this.props.DropBackendService.saveNewDrop(drop);
         observable.subscribe((response) => {
             switch (response.status) {
             case "SUCCESS":
                 this.props.pushNewStatusMessage(this.COPY.DROP_SAVED_SUCCESS);
-                this.refreshDropsFromServer(this.props.username);
-                this.removeDropFromUnsaved(drop)
+                this.props.DROP_SUCCESSFULLY_SAVED(drop);
+                //this.refreshDropsFromServer(this.props.username);
                 break;
             case "FAILED_ATTEMPT":
                 this.props.pushNewStatusMessage(this.COPY.SERVER_RESPONSE_ERROR);
@@ -103,16 +104,11 @@ class BackendCommunicationLayer extends BaseComponent {
         observable.subscribe((response) => {
             switch (response.status) {
             case "SUCCESS":
-                try{
-                    let droplist = response.data.slice();
-                    droplist = processIncomingDropList(droplist);
-                    this.updateDrops(droplist);
-                    this.mergeDropsIntoLocal(droplist);
-                    this.setIsSynced();
-                }
-                catch(e) {
-                    debugger;
-                }   
+                let droplist = response.data.slice();
+                droplist = processIncomingDropList(droplist);
+                this.updateDrops(droplist);
+                this.mergeDropsIntoLocal(droplist);
+                this.setIsSynced();
                 break;
             case "FAILED_ATTEMPT":
                 debugger;
@@ -141,12 +137,8 @@ class BackendCommunicationLayer extends BaseComponent {
     }
     
     postDropFailed (drop) {
-        this.props.ADD_UNSAVED_DROP(drop);
-        this.deleteLocalDrop(drop._id);
+        this.props.DROP_FAILED_TO_SAVE(drop);
         this.props.pushNewStatusMessage(this.COPY.POST_DROP_FAILED);
-        let unsavedDrops = this.props.unsavedDrops.slice();
-        unsavedDrops.push(drop);
-        this.props.updateUnsavedDrops(unsavedDrops);
     }
 
     deleteDropFailed (drop, deletedLocal) {
@@ -159,28 +151,27 @@ class BackendCommunicationLayer extends BaseComponent {
 
 
     deleteDropFromServer (drop) {
-        if (this.props.appConfirm(this.COPY.CONFIRM_DELETE_DROP)) {
-            let deletedLocal = this.deleteLocalDrop(drop)
-            this.props.pushNewStatusMessage(this.COPY.DELETE_DROP_STATUS);
-            let observable = this.props.DropBackendService.deleteDrop(drop._id);
-            observable.subscribe((response) => {
-                switch (response.status) {
-                case "SUCCESS":
-                    this.props.pushNewStatusMessage(this.COPY.DROP_WAS_DELETED);
-                    this.refreshDropsFromServer(this.props.username);
-                    break;
-                case "FAILED_ATTEMPT":
-                    this.props.pushNewStatusMessage(this.COPY.SERVER_RESPONSE_ERROR);
-                    break;
-                case "FAIL":
-                    this.deleteDropFailed(drop, deletedLocal);
-                    this.props.setFatalError();
-                    break;
-                default:
-                    break;
-                }
-            });
-        }
+        let deletedLocal = this.deleteLocalDrop(drop)
+        this.props.pushNewStatusMessage(this.COPY.DELETE_DROP_STATUS);
+        let observable = this.props.DropBackendService.deleteDrop(drop._id);
+        observable.subscribe((response) => {
+            switch (response.status) {
+            case "SUCCESS":
+                this.props.pushNewStatusMessage(this.COPY.DROP_WAS_DELETED);
+                this.refreshDropsFromServer(this.props.username);
+                break;
+            case "FAILED_ATTEMPT":
+                this.props.pushNewStatusMessage(this.COPY.SERVER_RESPONSE_ERROR);
+                break;
+            case "FAIL":
+                this.deleteDropFailed(drop, deletedLocal);
+                this.props.setFatalError();
+                break;
+            default:
+                break;
+            }
+        });
+        
     }
 
     pushNewLocalDrop (drop) {
@@ -227,6 +218,8 @@ class BackendCommunicationLayer extends BaseComponent {
                     username = {this.props.username}
                     updateUnsavedDrops = {this.props.updateUnsavedDrops}
                     appAlert = {this.props.appAlert}
+                    appConfirm = {this.props.appConfirm}
+                    trySavingFailedDropsAgain = {this.trySavingFailedDropsAgain}
                 />
             </div>
         );
@@ -237,7 +230,8 @@ const mapStateToProps = (state, ownProps) => ({
     isSyncing : state.isSyncing
 })
 const mapDispatchToProps = {
-    UPDATE_DROPS, SET_SYNCING, SET_IS_SYNCED, ADD_UNSAVED_DROP
+    UPDATE_DROPS, SET_SYNCING, SET_IS_SYNCED, ADD_UNSAVED_DROP, DROP_SUCCESSFULLY_SAVED,
+    ATTEMPT_SAVE_DROP, DROP_FAILED_TO_SAVE
 }
 
 

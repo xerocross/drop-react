@@ -18,12 +18,12 @@ export default class BaseComponent extends Component {
         }
     }
     COPY = COPY;
-    noop = ()=>{};
+    noop = () => {};
     // baseProps = ["drops", "droptext", "isSyncing", "unsavedDrops"];
-    isBasePropsDefined() {
+    isBasePropsDefined () {
         return !(!this.props.drops || !this.props.droptext || !this.props.isSyncing);
     }
-    validateBaseProps() {
+    validateBaseProps () {
         let notDefined = [];
         for (let key of this.baseProps) {
             if (typeof this.props[key] === "undefined") {
@@ -33,12 +33,5 @@ export default class BaseComponent extends Component {
         return notDefined;
     }
     runRenderValidation = this.noop
-    // runRenderValidation () {
-    //     let undefinedProps = this.validateBaseProps();
-    //     if (undefinedProps.length > 0) {
-    //         this.log(undefinedProps);
-    //         debugger;
-    //         throw new Error("props not defined");
-    //     }
-    // }
+
 }

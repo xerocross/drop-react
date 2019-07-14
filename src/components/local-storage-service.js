@@ -1,18 +1,27 @@
 let base_key = "drop-local-storage"
 
 export default {
-    getDropListKey(username) {
+    getDropListKey (username) {
         return `${base_key}:${username}`;
     },
     getDropKey (dropId) {
         return  `${base_key}:${dropId}`;
     },
-    addToList(username, drop) {
+    addToList (username, drop) {
+        if (!localStorage) {
+            return;
+        }
         const listKey = this.getDropListKey(username);
-        let list = JSON.parse(localStorage.getItem(listKey));
-        list = list || [];
-        list.push(drop._id);
-        localStorage.setItem(listKey, JSON.stringify(list));
+        let list;
+        try {
+            list = JSON.parse(localStorage.getItem(listKey));
+            list.push(drop._id);
+            localStorage.setItem(listKey, JSON.stringify(list));
+        } catch (e) {
+            list = [];
+            list.push(drop._id);
+            localStorage.setItem(listKey, JSON.stringify(list));
+        }
     },
     saveDrop (drop) {
         let username = drop.username;

@@ -8,6 +8,7 @@ export default {
     IS_SYNCED_MESSAGE : "synced",
     FATAL_ERR : "could not reach the server; please refresh when online again",
     IS_SYNCING_MESSAGE : "syncing...",
+    TRY_SAVE_NOT_IMPLEMENTED : "Sorry, but we have not finished this yet.  For failures to save, please re-enter the data manually for now.",
     DELETE_DROP_FAILED : "could not delete drop the server; please try again",
     POST_DROP_FAILED : "could not save drop to server; please try again",
     GETTING_DROPS_STATUS : "getting drops from server",

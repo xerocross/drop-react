@@ -4,12 +4,7 @@ import DropListInner from "./DropListInner.jsx";
 import "./DropList.scss";
 
 export default class DropList extends Component {
-    render() {
-        if (!this.props.drops) {
-            console.log("props.drops was not defined");
-            console.log(this.props);
-            throw new Error("drops not defined");
-        }
+    render () {
         return (
             <div className = "drop-list"
                 data-testid="drop-list"
@@ -20,6 +15,7 @@ export default class DropList extends Component {
                 <DropListInner
                     drops = {this.props.drops}
                     deleteDrop = {this.props.deleteDrop}
+                    isCanDelete = {this.props.isCanDelete}
                 />
             </div>
         )

@@ -9,13 +9,13 @@ let getByTestId;
 let queryByTestId;
 let container;
 
-let noop = ()=>{};
+let noop = () => {};
 let setProps = () => {
 }
 let unsavedDrops = [];
 let trySaveUnsavedDrops = noop;
 
-beforeEach(()=>{
+beforeEach(() => {
     setProps();
     div = document.createElement('div');
 })
@@ -108,14 +108,14 @@ test('renders DropList with correct number of drops (6)', () => {
 });
 
 
-test('click try again fires trySaveUnsavedDrops', (done) => {
-    trySaveUnsavedDrops = ()=>{
-        done();
-    }
-    ({ getByTestId, queryByTestId } = render(<UnsavedDrops
-        unsavedDrops = {unsavedDrops}
-        trySaveUnsavedDrops = {trySaveUnsavedDrops}
-    />, div) );
-    let button = getByTestId("unsaved-drops-try-again");
-    fireEvent.click(button);
-});
+// test('click try again fires trySaveUnsavedDrops', (done) => {
+//     trySaveUnsavedDrops = ()=>{
+//         done();
+//     }
+//     ({ getByTestId, queryByTestId } = render(<UnsavedDrops
+//         unsavedDrops = {unsavedDrops}
+//         trySaveUnsavedDrops = {trySaveUnsavedDrops}
+//     />, div) );
+//     let button = getByTestId("unsaved-drops-try-again");
+//     fireEvent.click(button);
+// });

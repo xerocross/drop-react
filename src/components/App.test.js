@@ -65,7 +65,6 @@ it('displays status messages visibly', () => {
     expect(len).toBeGreaterThan(0);
 });
 
-
 describe("renders MainDumbViewLayer with data if username is set",() => {
 
     test('renders MainDumbViewLayer if username in local storage', () => {

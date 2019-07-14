@@ -11,6 +11,7 @@ class DropSearch extends Component {
                     drops = {this.props.selectedDrops}
                     deleteDrop = {this.props.deleteDrop}
                     isSyncing = {this.props.isSyncing}
+                    isCanDelete = {true}
                 />
             </div>
         )

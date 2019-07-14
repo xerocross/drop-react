@@ -4,7 +4,7 @@ import HashtagList from "./HashtagList.jsx";
 import { connect } from "react-redux";
 class MainTextInput extends Component {
 
-    constructor() {
+    constructor () {
         super();
         this.handleTextChange = this.handleTextChange.bind(this);
         this.dropDrop = this.dropDrop.bind(this);
@@ -31,7 +31,7 @@ class MainTextInput extends Component {
                     <textarea 
                         className = "drop-textarea"
                         data-testid = "main-drop-textarea"
-                        onChange = {e=>this.handleTextChange(e)} 
+                        onChange = {e => this.handleTextChange(e)} 
                         value = {this.props.droptext}
                     >
                     </textarea>

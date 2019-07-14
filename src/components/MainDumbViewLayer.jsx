@@ -3,6 +3,7 @@ import BaseComponent from "./BaseComponent.jsx";
 import MainTextInput from "./MainTextInput";
 import DropSearch from "./DropSearch";
 import UnsavedDrops from "./UnsavedDrops.jsx";
+import FailedToSave from "./FailedToSave.jsx";
 
 export default class MainDumbViewLayer extends BaseComponent {
     constructor (props) {
@@ -47,7 +48,13 @@ export default class MainDumbViewLayer extends BaseComponent {
                 { this.props.unsavedDrops.length > 0 &&
                     <UnsavedDrops 
                         unsavedDrops = {this.props.unsavedDrops}
-                        trySaveUnsavedDrops = {this.props.trySaveUnsavedDrops}
+                    />
+                }
+                { this.props.dropsFailedToSave.length > 0 &&
+                    <FailedToSave 
+                        drops = {this.props.dropsFailedToSave}
+                        tryAgainSave = {this.props.trySavingFailedDropsAgain}
+                        isSyncing = {this.props.isTryingSaveAgain}
                     />
                 }
             </div>

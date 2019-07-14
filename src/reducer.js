@@ -1,7 +1,21 @@
 import HashtagHelper from "./helpers/HashtagHelper";
+import QAHelper from "./helpers/qa-helper.js";
 
 
 const initialState = (obj) => {
+    let unsavedDrops = [];
+    let dropsFailedToSave = [];
+
+    QAHelper.exists("unsaved")
+        .then(() => {
+            unsavedDrops = QAHelper.exampleDrops.slice();
+        });
+    QAHelper.exists("failedsave")
+        .then(() => {
+            console.log("failedsave");
+            dropsFailedToSave = QAHelper.exampleDrops.slice();
+        });
+
     return Object.assign(obj, {
         droptext : "",
         drops : [],
@@ -10,7 +24,9 @@ const initialState = (obj) => {
         isSyncing : false,
         username : undefined,
         isUsernameSet : false,
-        unsavedDrops : []
+        unsavedDrops : unsavedDrops,
+        dropsFailedToSave : dropsFailedToSave,
+        isTryingSaveAgain : false
     });
 }
 
@@ -52,6 +68,21 @@ function getSelectedDrops (previousState, state) {
     return selectedDrops;
 }
 
+function addToList (list, elt) {
+    let clonelist = list.slice();
+    clonelist.push(elt);
+    return clonelist;
+}
+
+function removeFromList (list, elt) {
+    let cloneList = list.slice();
+    let index = cloneList.indexOf(elt);
+    if (index > -1) {
+        cloneList.splice(index, 1);
+    }
+    return cloneList;
+}
+
 export default function (state, action) {
     if (typeof state === "undefined") {
         return initialState({});
@@ -59,21 +90,22 @@ export default function (state, action) {
     let newState = cloneObj(state);
     let unsavedDrops;
     let index;
+    let droplist;
     switch(action.type) {
     case "NEW_DROPTEXT":
         newState.droptext = action.payload;
-        newState.hashtags = getHashtags(state, newState);
-        newState.selectedDrops = getSelectedDrops(state, newState);
         break;
     case "UPDATE_DROPS":
         newState.drops = action.payload;
-        newState.selectedDrops = getSelectedDrops(state, newState);
         break;
     case "SET_SYNCING":
         newState.isSyncing = true;
         break;
     case "SET_IS_SYNCED":
         newState.isSyncing = false;
+        break;
+    case "TRY_SAVING_FAILED_DROPS_AGAIN":
+        newState.isTryingSaveAgain = true;
         break;
     case "POST_USERNAME_SET":
         newState.isUsernameSet = true;
@@ -83,21 +115,40 @@ export default function (state, action) {
         newState.isUsernameSet = false;
         newState.usernam = undefined;
         break;
-    case "ADD_UNSAVED_DROP":
-        unsavedDrops = state.unsavedDrops.slice();
-        unsavedDrops.push(action.payload);
-        newState.unsavedDrops = unsavedDrops;
+    case "CREATE_NEW_DROP":
+        newState.droptext = "";
         break;
-    case "REMOVE_UNSAVED_DROP":
+    case "DROP_SUCCESSFULLY_SAVED":
+        droplist = state.drops.slice();
+        droplist.push(action.payload);
+        newState.drops = droplist;
         unsavedDrops = state.unsavedDrops.slice();
         index = unsavedDrops.indexOf(action.payload);
         if (index > -1) {
             unsavedDrops.splice(index, 1);
         }
-        state.unsavedDrops = unsavedDrops;
+        newState.unsavedDrops = unsavedDrops;
         break;
+    case "ATTEMPT_SAVE_DROP":
+        let drop = action.payload;
+        unsavedDrops = state.unsavedDrops.slice();
+        unsavedDrops.push(drop);
+        newState.unsavedDrops = unsavedDrops;
+        break;
+    case "DROP_FAILED_TO_SAVE":
+        newState.dropsFailedToSave = addToList(state.dropsFailedToSave, action.payload);
+        newState.unsavedDrops = removeFromList(state.unsavedDrops, action.payload);
+        break;
+    case "ADD_UNSAVED_DROP":
+        throw new Error("deprecated");
+    case "REMOVE_UNSAVED_DROP":
+        throw new Error("REMOVE_UNSAVED_DROP");
     default:
         break;
     }
+
+    newState.hashtags = getHashtags(state, newState);
+    newState.selectedDrops = getSelectedDrops(state, newState);
     return newState;
 }
+
