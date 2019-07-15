@@ -9,7 +9,7 @@ import COPY from "../configuration/messages-copy.js";
 class DropBusinessLogicLayer extends BaseComponent {
     constructor (props) {
         super(props);
-        this.bindOwn(["updateDroptext", "createDrop", "deleteDrop", "trySaveUnsavedDrops", "trySavingFailedDropsAgain"]);
+        this.bindOwn(["updateDroptext", "createDrop", "deleteDrop", "trySavingFailedDropsAgain"]);
 
     }
 
