@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./MainTextInput.scss";
 import HashtagList from "./HashtagList.jsx";
 import { connect } from "react-redux";
+import COPY from "../configuration/messages-copy.js";
 class MainTextInput extends Component {
 
     constructor () {
@@ -23,16 +24,13 @@ class MainTextInput extends Component {
             <div className = "main-text-input"
                 data-testid="main-text-input"
             >
-                <h2><label>Create/Search Drops</label></h2>
-                <p className = "info">
-                    Use <span className = "highlight">#hashtags</span> to tag all the keywords.  Search is based on hashtags.
-                </p>
                 <form>
                     <textarea 
                         className = "drop-textarea"
                         data-testid = "main-drop-textarea"
                         onChange = {e => this.handleTextChange(e)} 
                         value = {this.props.droptext}
+                        placeholder = {COPY.DROP_INPUT_PLACEHOLDER}
                     >
                     </textarea>
                 </form>
@@ -42,7 +40,7 @@ class MainTextInput extends Component {
                         data-testid = "drop-button"
                         onClick = {this.dropDrop}
                     >
-                        drop
+                        save
                     </button>
                 </div>
                 <HashtagList />
