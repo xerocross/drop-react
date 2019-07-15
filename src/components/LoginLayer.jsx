@@ -3,13 +3,12 @@ import BaseComponent from "./BaseComponent.jsx";
 import LoginBar from "./LoginBar";
 import BackendCommunicationLayer from "./BackendCommunicationLayer";
 import { connect } from "react-redux";
-import { POST_USERNAME_SET, UNSET_USERNAME} from  "../actions.js";
+import { POST_USERNAME_SET, LOGIN } from  "../actions.js";
 
 class LoginLayer extends BaseComponent {
     constructor (props) {
         super(props);
         this.tryToGetUsernameFromStorage = this.tryToGetUsernameFromStorage.bind(this);
-        this.unsetUsername = this.unsetUsername.bind(this);
         this.postNewUsername = this.postNewUsername.bind(this);
     }
 
@@ -23,15 +22,8 @@ class LoginLayer extends BaseComponent {
             this.postNewUsername(username);
         }
     }
-
-    unsetUsername () {
-        this.props.UNSET_USERNAME();
-        this.props.LoginHelper.unsetLocalUsername();
-    }
-
     postNewUsername (newUsername) {
-        this.props.POST_USERNAME_SET(newUsername);
-        this.props.LoginHelper.setLocalUsername(newUsername);
+        this.props.LOGIN(newUsername);
     }
 
     render () {
@@ -41,10 +33,8 @@ class LoginLayer extends BaseComponent {
                 <LoginBar 
                     username = {this.props.username}
                     isUsernameSet = {this.props.isUsernameSet}
-                    unsetUsername = {this.unsetUsername}
                     postNewUsername = {this.postNewUsername}
                 />
-
                 {this.props.isUsernameSet &&
                     <BackendCommunicationLayer 
                         username = {this.props.username}
@@ -55,7 +45,6 @@ class LoginLayer extends BaseComponent {
                         appConfirm = {this.props.appConfirm}
                     />
                 }
-
             </div>
         );
     }
@@ -66,7 +55,8 @@ const mapStateToProps = (state, ownProps) => ({
 });
   
 const mapDispatchToProps = {
-    POST_USERNAME_SET, UNSET_USERNAME
+    POST_USERNAME_SET,
+    LOGIN
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginLayer);
