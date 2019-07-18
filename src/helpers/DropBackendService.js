@@ -2,7 +2,7 @@ import DurableAxios from "./durable-axios.js";
 let baseUrl = "https://thin-data-backend.herokuapp.com";
 
 export default {
-    saveNewDrop(drop) {
+    saveNewDrop (drop) {
         let url = baseUrl+ `/drop`;
         return DurableAxios.post({
             url : url,
@@ -10,15 +10,14 @@ export default {
             numTries : 7
         });
     },
-
-    deleteDrop(id) {
+    deleteDrop (id) {
         let deleteUrl = `${baseUrl}/drop/${id}`
         return DurableAxios.delete({
             url: deleteUrl,
             numTries : 7
         });
     },
-    getUserDrops(username) {
+    getUserDrops (username) {
         let url = `${baseUrl}/drops?username=${encodeURIComponent(username)}`;
         return DurableAxios.get({
             url: url,

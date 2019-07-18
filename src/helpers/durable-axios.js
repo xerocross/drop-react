@@ -2,12 +2,12 @@ import Observable from "./Observable";
 import  axios from "axios";
 
 export default {
-    executeRequest : function(configObject, successStatus) {
-        const { numTries, method, url, dataType, config, data } = configObject;
+    executeRequest : function (configObject, successStatus) {
+        const { numTries, url} = configObject;
         let iteration = 0;
         let delay = 1000;
-        let observable = new Observable((observer)=> {
-            let attempt = function() {
+        let observable = new Observable((observer) => {
+            let attempt = function () {
                 if (iteration >= numTries) {
                     observer.next({
                         status: "FAIL",
@@ -37,21 +37,21 @@ export default {
                                     statusCode : response.status,
                                     url : url
                                 })
-                                setTimeout(()=>{
+                                setTimeout(() => {
                                     attempt();
                                     delay+= delay;
                                 }, delay);
                             
                             }
                         })
-                        .catch((errorThrown) =>{
+                        .catch((errorThrown) => {
                             observer.next({
                                 status: "FAILED_ATTEMPT",
                                 attemptNum: iteration,
                                 error : errorThrown,
                                 url : url
                             })
-                            setTimeout(()=>{
+                            setTimeout(() => {
                                 attempt();
                                 delay+= 1000;
                             }, delay);
@@ -62,17 +62,17 @@ export default {
         })
         return observable;
     },
-    get : function(configObject) {
+    get : function (configObject) {
         configObject.method = "get";
         let successStatus = configObject.successStatus || 200;
         return this.executeRequest(configObject, successStatus);
     },
-    delete : function(configObject) {
+    delete : function (configObject) {
         configObject.method = "delete";
         let successStatus = configObject.successStatus || 204;
         return this.executeRequest(configObject, successStatus);
     },
-    post : function(configObject) {
+    post : function (configObject) {
         configObject.method = "post";
         let successStatus = configObject.successStatus || 201;
         return this.executeRequest(configObject, successStatus);

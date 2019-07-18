@@ -1,8 +1,8 @@
 module.exports = function Observable (subscribeFunction) {
     let self = this;
-    this.subscriberUpdateFunction = function() {}
+    this.subscriberUpdateFunction = function () {}
     this.observer = {
-        next : function(val) {
+        next : function (val) {
             self.subscriberUpdateFunction(val);
         }
     };
@@ -10,7 +10,7 @@ module.exports = function Observable (subscribeFunction) {
         this.subscriberUpdateFunction = subFunction
         subscribeFunction(this.observer);
     }
-    this.next = function(val) {
+    this.next = function (val) {
         this.subscriberUpdateFunction(val);
     }
 }
