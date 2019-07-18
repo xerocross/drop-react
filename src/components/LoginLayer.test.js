@@ -5,13 +5,8 @@ import Observable from "../helpers/Observable";
 import $ from "jquery";
 import Store from "../store.js";
 import { Provider } from "react-redux";
-import {POST_USERNAME_SET, UNSET_USERNAME, LOGIN} from "../actions.js";
+import {POST_USERNAME_SET, UNSET_USERNAME} from "../actions.js";
 import {noop} from "../testing-helpers.js";
-
-jest.mock("../actions.js", () => ({
-    default: 'mockedDefaultExport',
-    LOGIN: jest.fn(),
-}));
 
 let getByTestId, queryByTestId;
 let store;
@@ -53,30 +48,16 @@ let renderWithOptions = (config) => {
     /></ Provider>, div );
 }
 
+
 test('renders without crashing', () => {
     renderWithOptions({});
 });
-
-test('renders BackendCommunicationLayer if isUsernameSet', () => {
-    store.dispatch(POST_USERNAME_SET("adam"));
-    ({getByTestId, queryByTestId} = renderWithOptions({}));
-    let elt = queryByTestId("BackendCommunicationLayer");
-    expect(elt).toBeTruthy();
-});
-
-test('does not render BackendCommunicationLayer if username is not set', () => {
-    ({getByTestId, queryByTestId} = renderWithOptions({}));
-    let elt = queryByTestId("BackendCommunicationLayer");
-    expect(elt).toBeFalsy();
-});
-
 test('renders LoginBar', () => {
     ({getByTestId, queryByTestId} = renderWithOptions({}));
     let elt = queryByTestId("LoginBar");
     expect(elt).toBeTruthy();
 });
-
-test('tries to get username from local storage on mount', () => {
+it('tries to get username from local storage on mount', () => {
     LoginHelper.tryToGetUsernameFromStorage = jest.fn();
     ({getByTestId, queryByTestId} = renderWithOptions({
         LoginHelper : LoginHelper
@@ -84,30 +65,57 @@ test('tries to get username from local storage on mount', () => {
     expect(LoginHelper.tryToGetUsernameFromStorage.mock.calls.length).toBe(1)
 });
 
-test.only('dispatches POST_USERNAME_SET if username is found in local storage', () => {
-    LoginHelper.tryToGetUsernameFromStorage = jest.fn();
-    LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce("adam");
-
-    store.dispatch = jest.fn();
-    ({getByTestId, queryByTestId} = renderWithOptions({
-        LoginHelper : LoginHelper
-    }));
-    let calls = store.dispatch.mock.calls;
-    console.log("calls", calls);
-    calls.forEach(call => {
-        console.log(call);
+describe("if username has been posted",() => {
+    it('renders IsLoggedInStuff', () => {
+        store.dispatch(POST_USERNAME_SET("adam"));
+        ({getByTestId, queryByTestId} = renderWithOptions({
+            LoginHelper : LoginHelper
+        }));
+        let IsLoggedInStuff = queryByTestId("IsLoggedInStuff");
+        expect(IsLoggedInStuff).toBeTruthy();
     });
-    // store.dispatch.mock.calls.forEach(call => {
-    //     let thunk = call[0];
-
-    //     if (call[0].type === "POST_USERNAME_SET") {
-    //         expect(call[0].payload).toBe("adam");
-    //         done();
-    //     }
-    // });
+    it('renders LoginBar', () => {
+        store.dispatch(POST_USERNAME_SET("adam"));
+        ({getByTestId, queryByTestId} = renderWithOptions({
+            LoginHelper : LoginHelper
+        }));
+        let elt = queryByTestId("LoginBar");
+        expect(elt).toBeTruthy();
+    });
 });
 
-test('dispatches POST_USERNAME_SET if user sets username value and clicks login-done-button button', (done) => {
+describe("if UNSET_USERNAME has posted", () => {
+    it('does not render IsLoggedInStuff', () => {
+        store.dispatch(UNSET_USERNAME());
+        ({getByTestId, queryByTestId} = renderWithOptions({
+            LoginHelper : LoginHelper
+        }));
+        let IsLoggedInStuff = queryByTestId("IsLoggedInStuff");
+        expect(IsLoggedInStuff).toBeFalsy();
+    });
+    it('renders LoginBar', () => {
+        store.dispatch(UNSET_USERNAME());
+        ({getByTestId, queryByTestId} = renderWithOptions({
+            LoginHelper : LoginHelper
+        }));
+        let elt = queryByTestId("LoginBar");
+        expect(elt).toBeTruthy();
+    });
+});
+
+describe("if username is found in local storage", () => {
+    it('renders IsLoggedInStuff', () => {
+        LoginHelper.tryToGetUsernameFromStorage = jest.fn();
+        LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce("adam");
+        ({getByTestId, queryByTestId} = renderWithOptions({
+            LoginHelper : LoginHelper
+        }));
+        let IsLoggedInStuff = queryByTestId("IsLoggedInStuff");
+        expect(IsLoggedInStuff).toBeTruthy();
+    });
+});
+
+it('renders IsLoggedInStuff if user sets username value and clicks login-done-button button', () => {
     LoginHelper.tryToGetUsernameFromStorage = jest.fn();
     LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce(undefined);
     store.dispatch = jest.fn(store.dispatch);
@@ -119,26 +127,6 @@ test('dispatches POST_USERNAME_SET if user sets username value and clicks login-
     let loginDoneButton = getByTestId("login-done-button");
     store.dispatch.mockClear();
     fireEvent.click(loginDoneButton);
-    store.dispatch.mock.calls.forEach(call => {
-        if (call[0].type === "POST_USERNAME_SET") {
-            expect(call[0].payload).toBe("andrew");
-            done();
-        }
-    });
-});
-
-test('stores username locally if user sets username', () => {
-    LoginHelper.tryToGetUsernameFromStorage = jest.fn();
-    LoginHelper.tryToGetUsernameFromStorage.mockReturnValueOnce(undefined);
-    store.dispatch = jest.fn(store.dispatch);
-    ({getByTestId, queryByTestId} = renderWithOptions({
-        LoginHelper : LoginHelper
-    }));
-    let usernameInput = getByTestId("username-input")
-    fireEvent.change(usernameInput, { target: { value: "andrew" } });
-    let loginDoneButton = getByTestId("login-done-button");
-    store.dispatch.mockClear();
-    LoginHelper.setLocalUsername = jest.fn();
-    fireEvent.click(loginDoneButton);
-    expect(LoginHelper.setLocalUsername.mock.calls[0][0]).toBe("andrew");
+    let IsLoggedInStuff = queryByTestId("IsLoggedInStuff");
+    expect(IsLoggedInStuff).toBeTruthy();
 });
