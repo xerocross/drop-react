@@ -1,0 +1,14 @@
+.TopMenu {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    .unstyled-button {
+        background-color: transparent;
+        border-style: none;
+        outline: none;
+    }
+    .menu-item {
+        font-weight: bold;
+    }
+}

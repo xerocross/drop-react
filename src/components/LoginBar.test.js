@@ -35,91 +35,76 @@ test('renders without crashing', () => {
     });
 });
 
-test('if isUsernameSet then it shows logout/change user button', () => {
-    ({ getByTestId, queryByTestId } = renderWithOptions({
-        username : "adam",
-        isUsernameSet : true
-    }));
-    let elt = queryByTestId("logout-button");
-    expect(elt).toBeTruthy();
+describe("if isUsernameSet false then", () => {
+    it('it renders NewUsernameForm', () => {
+        ({ getByTestId, queryByTestId } = renderWithOptions({
+            isUsernameSet : false
+        }));
+        let elt = queryByTestId("NewUsernameForm");
+        expect(elt).toBeTruthy();
+    });
+    it('shows login-done-button', () => {
+        ({ getByTestId, queryByTestId } = renderWithOptions({
+            isUsernameSet : false,
+            username : "adam"
+        }));
+        let elt = queryByTestId("login-done-button");
+        expect(elt).toBeTruthy();
+    });
+    
+    describe("the username form", () => {
+        it('shows prop username value', () => {
+            ({ getByTestId, queryByTestId } = renderWithOptions({
+                isUsernameSet : false,
+                username : "adam"
+            }));
+            let elt = queryByTestId("username-input");
+            expect(elt.value).toBe("adam");
+        });
+    });
+    it('calls postNewUsername if click login-done-button', (done) => {
+        let postNewUsername = () => {
+            done();
+        }
+        ({ getByTestId, queryByTestId } = renderWithOptions({
+            isUsernameSet : false,
+            username : "adam",
+            postNewUsername : postNewUsername
+        }));
+        let elt = queryByTestId("login-done-button");
+        fireEvent.click(elt);
+    });
+    it('calls postNewUsername with the new username when user clicks done', (done) => {
+        let postNewUsername = (val) => {
+            expect(val).toBe("apple");
+            done();
+        }
+        ({ getByTestId, queryByTestId } = renderWithOptions({
+            isUsernameSet : false,
+            username : "adam",
+            postNewUsername : postNewUsername
+        }));
+        let elt = queryByTestId("username-input");
+        fireEvent.change(elt, { target: { value: "apple" } });
+        let doneButton = queryByTestId("login-done-button");
+        fireEvent.click(doneButton);
+    });
+});
+describe("if isUsernameSet true", () => {
+    it("does not render NewUsernameForm", () => {
+        ({ getByTestId, queryByTestId } = renderWithOptions({
+            isUsernameSet : true
+        }));
+        let elt = queryByTestId("NewUsernameForm");
+        expect(elt).toBeFalsy();
+    });
 });
 
-test('if isUsernameSet false then it does not show logout/change user button', () => {
-    ({ getByTestId, queryByTestId } = renderWithOptions({
-        username : "adam",
-        isUsernameSet : false
-    }));
-    let elt = queryByTestId("logout-button");
-    expect(elt).toBeFalsy();
-});
-
-test('if isUsernameSet false then it renders NewUsernameForm', () => {
-    ({ getByTestId, queryByTestId } = renderWithOptions({
-        isUsernameSet : false
-    }));
-    let elt = queryByTestId("NewUsernameForm");
-    expect(elt).toBeTruthy();
-});
-
-test('if isUsernameSet false then username form shows prop username value', () => {
-    ({ getByTestId, queryByTestId } = renderWithOptions({
-        isUsernameSet : false,
-        username : "adam"
-    }));
-    let elt = queryByTestId("username-input");
-    expect(elt.value).toBe("adam");
-});
 
 
-test('if isUsernameSet false then login-done-button shows', () => {
-    ({ getByTestId, queryByTestId } = renderWithOptions({
-        isUsernameSet : false,
-        username : "adam"
-    }));
-    let elt = queryByTestId("login-done-button");
-    expect(elt).toBeTruthy();
-});
 
 
-test('fire login-done-button then calls postNewUsername', (done) => {
-    let postNewUsername = () => {
-        done();
-    }
-    ({ getByTestId, queryByTestId } = renderWithOptions({
-        isUsernameSet : false,
-        username : "adam",
-        postNewUsername : postNewUsername
-    }));
-    let elt = queryByTestId("login-done-button");
-    fireEvent.click(elt);
-});
 
-test('calls postNewUsername with the new username when user clicks done', (done) => {
-    let postNewUsername = (val) => {
-        expect(val).toBe("apple");
-        done();
-    }
-    ({ getByTestId, queryByTestId } = renderWithOptions({
-        isUsernameSet : false,
-        username : "adam",
-        postNewUsername : postNewUsername
-    }));
-    let elt = queryByTestId("username-input");
-    fireEvent.change(elt, { target: { value: "apple" } });
-    let doneButton = queryByTestId("login-done-button");
-    fireEvent.click(doneButton);
 
-});
 
-test('clicking logout button calls unsetUsername', (done) => {
-    let unsetUsername = () => {
-        done();
-    }
-    ({ getByTestId, queryByTestId } = renderWithOptions({
-        isUsernameSet : true,
-        username : "adam",
-        unsetUsername : unsetUsername
-    }));
-    let elt = queryByTestId("logout-button");
-    fireEvent.click(elt);
-});
+

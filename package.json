@@ -5,6 +5,7 @@
   "dependencies": {
     "@babel/core": "7.4.3",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/plugin-transform-react-jsx-source": "^7.5.0",
     "@svgr/webpack": "4.1.0",
     "@testing-library/react": "^8.0.4",
     "@typescript-eslint/eslint-plugin": "1.6.0",
@@ -74,6 +75,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js && node rename.js",
     "test": "cross-env CI=true node scripts/test.js",
+    "test:watch": "node scripts/test.js",
     "local": "node scripts/start.js"
   },
   "eslintConfig": {

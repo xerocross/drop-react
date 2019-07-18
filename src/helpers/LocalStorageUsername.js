@@ -11,5 +11,10 @@ export default {
         if (localStorage) {
             localStorage.setItem("drop:username", username);
         }
+    },
+    clearUsername () {
+        if (localStorage) {
+            localStorage.removeItem("drop:username");
+        }
     }
 }

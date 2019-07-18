@@ -8,6 +8,6 @@ export default {
         LocalStorageUsername.setUsername(username);
     },
     unsetLocalUsername () {
-        LocalStorageUsername.setUsername(undefined);
+        LocalStorageUsername.clearUsername();
     }
 }
