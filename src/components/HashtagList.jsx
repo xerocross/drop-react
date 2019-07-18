@@ -8,7 +8,7 @@ class HashtagList extends Component {
                 className="hashtag-list"
             >
                 {
-                    this.props.hashtags.map(tag=> {
+                    this.props.hashtags.map(tag => {
                         return (
                             <span key = {tag} data-testid="hashtag" className="hashtag">{tag}</span>
                         );
