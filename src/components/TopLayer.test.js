@@ -8,6 +8,7 @@ import TopLayer from "./TopLayer.jsx";
 import LoginHelper from "../helpers/LoginHelper.js";
 import DropBackendService from "../helpers/DropBackendService.js";
 import Observable from "../helpers/Observable.js";
+import {POST_USERNAME_SET, UNSET_USERNAME} from "../actions.js";
 
 jest.mock('../helpers/DropBackendService.js');
 jest.mock('../helpers/LoginHelper.js');
@@ -65,4 +66,25 @@ it('renders without crashing', () => {
     ({ getByTestId } = renderWithOptions());
 });
 
+describe("if user is logged in", () => {
+    it("renders TopMenu", () => {
+        store.dispatch(POST_USERNAME_SET("adam"));
+        DropBackendService.getUserDrops.mockReturnValueOnce(
+            new Observable((observer) => {
+            }));
+        ({ getByTestId, queryByTestId } = renderWithOptions());
+        let topMenuElt = queryByTestId("TopMenu");
+        expect(topMenuElt).toBeTruthy();
+    });
+});
+describe("if user is not logged in", () => {
+    it("does not render TopMenu", () => {
+        DropBackendService.getUserDrops.mockReturnValueOnce(
+            new Observable((observer) => {
+            }));
+        ({ getByTestId, queryByTestId } = renderWithOptions());
+        let topMenuElt = queryByTestId("TopMenu");
+        expect(topMenuElt).toBeFalsy();
+    });
+});
 

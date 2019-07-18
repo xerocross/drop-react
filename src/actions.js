@@ -1,3 +1,4 @@
+import LoginHelper from "./helpers/LoginHelper.js";
 
 const NEW_DROPTEXT = (val) => {
     return {
@@ -28,6 +29,13 @@ const POST_USERNAME_SET = (username) => {
     return {
         type: "POST_USERNAME_SET",
         payload: username
+    }
+}
+
+const LOGIN = (username) => {
+    return (dispatch) => {
+        LoginHelper.setLocalUsername(username);
+        dispatch(POST_USERNAME_SET(username));
     }
 }
 
@@ -93,6 +101,30 @@ const TRY_SAVING_FAILED_DROPS_AGAIN = () => {
     }
 }
 
+const LOGOUT = () => {
+    return (dispatch) => {
+        LoginHelper.unsetLocalUsername();
+        dispatch(UNSET_USERNAME());
+    }
+}
 
-export {NEW_DROPTEXT, UPDATE_DROPS, SET_SYNCING, SET_IS_SYNCED, UNSET_USERNAME, POST_USERNAME_SET, ADD_UNSAVED_DROP, REMOVE_UNSAVED_DROP, TRY_SAVE_UNSAVED_DROPS, DROP_SUCCESSFULLY_SAVED, ATTEMPT_SAVE_DROP, CREATE_NEW_DROP, INIT_DELETE_DROP, DROP_FAILED_TO_SAVE, TRY_SAVING_FAILED_DROPS_AGAIN
+
+export {
+    NEW_DROPTEXT, 
+    UPDATE_DROPS, 
+    SET_SYNCING, 
+    SET_IS_SYNCED, 
+    UNSET_USERNAME, 
+    POST_USERNAME_SET, 
+    ADD_UNSAVED_DROP, 
+    REMOVE_UNSAVED_DROP, 
+    TRY_SAVE_UNSAVED_DROPS, 
+    DROP_SUCCESSFULLY_SAVED, 
+    ATTEMPT_SAVE_DROP, 
+    CREATE_NEW_DROP, 
+    INIT_DELETE_DROP, 
+    DROP_FAILED_TO_SAVE, 
+    TRY_SAVING_FAILED_DROPS_AGAIN, 
+    LOGOUT,
+    LOGIN
 };

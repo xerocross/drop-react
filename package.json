@@ -75,6 +75,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js && node rename.js",
     "test": "cross-env CI=true node scripts/test.js",
+    "test:watch": "node scripts/test.js",
     "local": "node scripts/start.js"
   },
   "eslintConfig": {

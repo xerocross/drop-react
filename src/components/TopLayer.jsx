@@ -6,7 +6,7 @@ import DropBackendService from "../helpers/DropBackendService.js";
 import LoginHelper from "../helpers/LoginHelper.js";
 import { connect } from "react-redux";
 import {} from  "../actions.js";
-import QAHelper from "../helpers/qa-helper.js";
+import TopMenu from "./TopMenu.jsx";
 
 class TopLayer extends BaseComponent {
     constructor (props) {
@@ -66,6 +66,9 @@ class TopLayer extends BaseComponent {
                 <StatusBar 
                     statusMessages = {this.state.statusMessages}
                 />
+                {this.props.isUsernameSet && 
+                    <TopMenu />
+                }
                 <LoginLayer 
                     pushNewStatusMessage = {this.pushNewStatusMessage}
                     DropBackendService = {DropBackendService}
@@ -79,6 +82,7 @@ class TopLayer extends BaseComponent {
     }
 }
 const mapStateToProps = (state, ownProps) => ({
+    isUsernameSet : state.isUsernameSet
 })
 const mapDispatchToProps = {
 }
