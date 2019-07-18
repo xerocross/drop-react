@@ -7,7 +7,7 @@ import "./TopMenu.scss";
 class TopMenu extends BaseComponent {
     render () {
         return (
-            <div className = "TopMenu">
+            <div className = "TopMenu" data-testid = "TopMenu">
                 <button
                     className = "unstyled-button menu-item"
                     onClick = {this.props.LOGOUT}

@@ -6,7 +6,6 @@ import DropBackendService from "../helpers/DropBackendService.js";
 import LoginHelper from "../helpers/LoginHelper.js";
 import { connect } from "react-redux";
 import {} from  "../actions.js";
-import QAHelper from "../helpers/qa-helper.js";
 import TopMenu from "./TopMenu.jsx";
 
 class TopLayer extends BaseComponent {
